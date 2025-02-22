@@ -42,7 +42,7 @@ import rescuecore2.worldmodel.EntityID;
 public class TIMRADExtActionClear extends ExtAction {
 
   private PathPlanning pathPlanning;
-  // private int clearDistance;
+  private int clearDistance;
   // private int forcedMove;
   // private int thresholdRest;
   // private int kernelTime;
