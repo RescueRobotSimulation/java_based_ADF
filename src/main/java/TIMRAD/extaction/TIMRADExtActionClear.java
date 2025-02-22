@@ -66,15 +66,15 @@ public class TIMRADExtActionClear extends ExtAction {
     this.oldClearY = 0;
     this.count = 0;
 
-    // switch (si.getMode()) {
-    //   case PRECOMPUTATION_PHASE:
-    //   case PRECOMPUTED:
-    //   case NON_PRECOMPUTE:
-    //     this.pathPlanning = moduleManager.getModule(
-    //         "DefaultExtActionClear.PathPlanning",
-    //         "adf.impl.module.algorithm.DijkstraPathPlanning");
-    //     break;
-    // }
+    switch (si.getMode()) {
+      case PRECOMPUTATION_PHASE:
+      case PRECOMPUTED:
+      case NON_PRECOMPUTE:
+        this.pathPlanning = moduleManager.getModule(
+            "DefaultExtActionClear.PathPlanning",
+            "adf.impl.module.algorithm.DijkstraPathPlanning");
+        break;
+    }
   }
 
 
