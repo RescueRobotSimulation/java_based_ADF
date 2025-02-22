@@ -42,29 +42,29 @@ import rescuecore2.worldmodel.EntityID;
 public class TIMRADExtActionClear extends ExtAction {
 
   private PathPlanning pathPlanning;
-  private int clearDistance;
-  private int forcedMove;
-  private int thresholdRest;
-  private int kernelTime;
+  // private int clearDistance;
+  // private int forcedMove;
+  // private int thresholdRest;
+  // private int kernelTime;
   private EntityID target;
   private Map<EntityID, Set<Point2D>> movePointCache;
-  private int oldClearX;
-  private int oldClearY;
-  private int count;
+  // private int oldClearX;
+  // private int oldClearY;
+  // private int count;
 
   public TIMRADExtActionClear(AgentInfo ai, WorldInfo wi, ScenarioInfo si, ModuleManager moduleManager, DevelopData developData) {
     super(ai, wi, si, moduleManager, developData);
-    this.clearDistance = si.getClearRepairDistance();
-    this.forcedMove = developData
-        .getInteger("adf.impl.extaction.DefaultExtActionClear.forcedMove", 3);
-    this.thresholdRest = developData
-        .getInteger("adf.impl.extaction.DefaultExtActionClear.rest", 100);
+    // this.clearDistance = si.getClearRepairDistance();
+    // this.forcedMove = developData
+    //     .getInteger("adf.impl.extaction.DefaultExtActionClear.forcedMove", 3);
+    // this.thresholdRest = developData
+    //     .getInteger("adf.impl.extaction.DefaultExtActionClear.rest", 100);
 
     this.target = null;
     this.movePointCache = new HashMap<>();
-    this.oldClearX = 0;
-    this.oldClearY = 0;
-    this.count = 0;
+    // this.oldClearX = 0;
+    // this.oldClearY = 0;
+    // this.count = 0;
 
     switch (si.getMode()) {
       case PRECOMPUTATION_PHASE:
@@ -81,15 +81,15 @@ public class TIMRADExtActionClear extends ExtAction {
   @Override
   public ExtAction precompute(PrecomputeData precomputeData) {
     super.precompute(precomputeData);
-    if (this.getCountPrecompute() >= 2) {
-      return this;
-    }
-    this.pathPlanning.precompute(precomputeData);
-    try {
-      this.kernelTime = this.scenarioInfo.getKernelTimesteps();
-    } catch (NoSuchConfigOptionException e) {
-      this.kernelTime = -1;
-    }
+    // if (this.getCountPrecompute() >= 2) {
+    //   return this;
+    // }
+    // this.pathPlanning.precompute(precomputeData);
+    // try {
+    //   this.kernelTime = this.scenarioInfo.getKernelTimesteps();
+    // } catch (NoSuchConfigOptionException e) {
+    //   this.kernelTime = -1;
+    // }
     this.pathPlanning.precompute(precomputeData);
     return this;
   }
@@ -98,15 +98,15 @@ public class TIMRADExtActionClear extends ExtAction {
   @Override
   public ExtAction resume(PrecomputeData precomputeData) {
     super.resume(precomputeData);
-    if (this.getCountResume() >= 2) {
-      return this;
-    }
-    this.pathPlanning.resume(precomputeData);
-    try {
-      this.kernelTime = this.scenarioInfo.getKernelTimesteps();
-    } catch (NoSuchConfigOptionException e) {
-      this.kernelTime = -1;
-    }
+    // if (this.getCountResume() >= 2) {
+    //   return this;
+    // }
+    // this.pathPlanning.resume(precomputeData);
+    // try {
+    //   this.kernelTime = this.scenarioInfo.getKernelTimesteps();
+    // } catch (NoSuchConfigOptionException e) {
+    //   this.kernelTime = -1;
+    // }
     this.pathPlanning.precompute(precomputeData);
     return this;
   }
@@ -115,15 +115,15 @@ public class TIMRADExtActionClear extends ExtAction {
   @Override
   public ExtAction preparate() {
     super.preparate();
-    if (this.getCountPreparate() >= 2) {
-      return this;
-    }
-    this.pathPlanning.preparate();
-    try {
-      this.kernelTime = this.scenarioInfo.getKernelTimesteps();
-    } catch (NoSuchConfigOptionException e) {
-      this.kernelTime = -1;
-    }
+    // if (this.getCountPreparate() >= 2) {
+    //   return this;
+    // }
+    // this.pathPlanning.preparate();
+    // try {
+    //   this.kernelTime = this.scenarioInfo.getKernelTimesteps();
+    // } catch (NoSuchConfigOptionException e) {
+    //   this.kernelTime = -1;
+    // }
     this.pathPlanning.preparate();
     return this;
   }
@@ -296,36 +296,36 @@ public class TIMRADExtActionClear extends ExtAction {
             moveAction = action;
           }
         } else if (this.intersect(policeX, policeY, humanX, humanY, blockade)) {
-          Vector2D vector = this
-              .scaleClear(this.getVector(policeX, policeY, humanX, humanY));
-          int clearX = (int) (policeX + vector.getX());
-          int clearY = (int) (policeY + vector.getY());
-          vector = this.scaleBackClear(vector);
-          int startX = (int) (policeX + vector.getX());
-          int startY = (int) (policeY + vector.getY());
-          if (this.intersect(startX, startY, clearX, clearY, blockade)) {
-            if (actionClear == null) {
-              actionClear = new ActionClear(clearX, clearY, blockade);
-            } else {
-              if (actionClear.getTarget() != null) {
-                Blockade another = (Blockade) this.worldInfo
-                    .getEntity(actionClear.getTarget());
-                if (another != null && this.intersect(blockade, another)) {
-                  return new ActionClear(another);
-                }
-                int distance1 = this.worldInfo.getDistance(police, another);
-                int distance2 = this.worldInfo.getDistance(police, blockade);
-                if (distance1 > distance2) {
-                  return new ActionClear(clearX, clearY, blockade);
-                }
-              }
-              return actionClear;
-            }
-          } else if (distance < minDistance) {
-            minDistance = distance;
-            moveAction = new ActionMove(Lists.newArrayList(road.getID()),
-                (int) humanX, (int) humanY);
-          }
+          // Vector2D vector = this
+          //     .scaleClear(this.getVector(policeX, policeY, humanX, humanY));
+          // int clearX = (int) (policeX + vector.getX());
+          // int clearY = (int) (policeY + vector.getY());
+          // vector = this.scaleBackClear(vector);
+          // int startX = (int) (policeX + vector.getX());
+          // int startY = (int) (policeY + vector.getY());
+          // if (this.intersect(startX, startY, clearX, clearY, blockade)) {
+          //   if (actionClear == null) {
+          //     actionClear = new ActionClear(clearX, clearY, blockade);
+          //   } else {
+          //     if (actionClear.getTarget() != null) {
+          //       Blockade another = (Blockade) this.worldInfo
+          //           .getEntity(actionClear.getTarget());
+          //       if (another != null && this.intersect(blockade, another)) {
+          //         return new ActionClear(another);
+          //       }
+          //       int distance1 = this.worldInfo.getDistance(police, another);
+          //       int distance2 = this.worldInfo.getDistance(police, blockade);
+          //       if (distance1 > distance2) {
+          //         return new ActionClear(clearX, clearY, blockade);
+          //       }
+          //     }
+          //     return actionClear;
+          //   }
+          // } else if (distance < minDistance) {
+          //   minDistance = distance;
+          //   moveAction = new ActionMove(Lists.newArrayList(road.getID()),
+          //       (int) humanX, (int) humanY);
+          // }
         }
       }
       if (actionClear != null) {
@@ -365,14 +365,14 @@ public class TIMRADExtActionClear extends ExtAction {
         }
       }
     }
-    if (clearBlockade != null) {
-      if (minDistance < this.clearDistance) {
-        return new ActionClear(clearBlockade);
-      } else {
-        return new ActionMove(Lists.newArrayList(police.getPosition()),
-            clearBlockade.getX(), clearBlockade.getY());
-      }
-    }
+    // if (clearBlockade != null) {
+    //   if (minDistance < this.clearDistance) {
+    //     return new ActionClear(clearBlockade);
+    //   } else {
+    //     return new ActionMove(Lists.newArrayList(police.getPosition()),
+    //         clearBlockade.getX(), clearBlockade.getY());
+    //   }
+    // }
     double agentX = police.getX();
     double agentY = police.getY();
     clearBlockade = null;
@@ -392,17 +392,17 @@ public class TIMRADExtActionClear extends ExtAction {
         }
       }
     }
-    if (clearBlockade != null) {
-      if (minPointDistance < this.clearDistance) {
-        Vector2D vector = this
-            .scaleClear(this.getVector(agentX, agentY, clearX, clearY));
-        clearX = (int) (agentX + vector.getX());
-        clearY = (int) (agentY + vector.getY());
-        return new ActionClear(clearX, clearY, clearBlockade);
-      }
-      return new ActionMove(Lists.newArrayList(police.getPosition()), clearX,
-          clearY);
-    }
+    // if (clearBlockade != null) {
+    //   if (minPointDistance < this.clearDistance) {
+    //     Vector2D vector = this
+    //         .scaleClear(this.getVector(agentX, agentY, clearX, clearY));
+    //     clearX = (int) (agentX + vector.getX());
+    //     clearY = (int) (agentY + vector.getY());
+    //     return new ActionClear(clearX, clearY, clearBlockade);
+    //   }
+    //   return new ActionMove(Lists.newArrayList(police.getPosition()), clearX,
+    //       clearY);
+    // }
     return null;
   }
 
@@ -426,47 +426,47 @@ public class TIMRADExtActionClear extends ExtAction {
         }
         ActionClear actionClear = null;
         ActionMove actionMove = null;
-        Vector2D vector = this
-            .scaleClear(this.getVector(agentX, agentY, midX, midY));
-        int clearX = (int) (agentX + vector.getX());
-        int clearY = (int) (agentY + vector.getY());
-        vector = this.scaleBackClear(vector);
-        int startX = (int) (agentX + vector.getX());
-        int startY = (int) (agentY + vector.getY());
+        // Vector2D vector = this
+        //     .scaleClear(this.getVector(agentX, agentY, midX, midY));
+        // int clearX = (int) (agentX + vector.getX());
+        // int clearY = (int) (agentY + vector.getY());
+        // vector = this.scaleBackClear(vector);
+        // int startX = (int) (agentX + vector.getX());
+        // int startY = (int) (agentY + vector.getY());
         for (Blockade blockade : this.worldInfo.getBlockades(road)) {
           if (blockade == null || !blockade.isApexesDefined()) {
             continue;
           }
-          if (this.intersect(startX, startY, midX, midY, blockade)) {
-            if (this.intersect(startX, startY, clearX, clearY, blockade)) {
-              if (actionClear == null) {
-                actionClear = new ActionClear(clearX, clearY, blockade);
-                if (this.equalsPoint(this.oldClearX, this.oldClearY, clearX,
-                    clearY)) {
-                  if (this.count >= this.forcedMove) {
-                    this.count = 0;
-                    return new ActionMove(Lists.newArrayList(road.getID()),
-                        clearX, clearY);
-                  }
-                  this.count++;
-                }
-                this.oldClearX = clearX;
-                this.oldClearY = clearY;
-              } else {
-                if (actionClear.getTarget() != null) {
-                  Blockade another = (Blockade) this.worldInfo
-                      .getEntity(actionClear.getTarget());
-                  if (another != null && this.intersect(blockade, another)) {
-                    return new ActionClear(another);
-                  }
-                }
-                return actionClear;
-              }
-            } else if (actionMove == null) {
-              actionMove = new ActionMove(Lists.newArrayList(road.getID()),
-                  (int) midX, (int) midY);
-            }
-          }
+          // if (this.intersect(startX, startY, midX, midY, blockade)) {
+          //   if (this.intersect(startX, startY, clearX, clearY, blockade)) {
+          //     if (actionClear == null) {
+          //       actionClear = new ActionClear(clearX, clearY, blockade);
+          //       if (this.equalsPoint(this.oldClearX, this.oldClearY, clearX,
+          //           clearY)) {
+          //         if (this.count >= this.forcedMove) {
+          //           this.count = 0;
+          //           return new ActionMove(Lists.newArrayList(road.getID()),
+          //               clearX, clearY);
+          //         }
+          //         this.count++;
+          //       }
+          //       this.oldClearX = clearX;
+          //       this.oldClearY = clearY;
+          //     } else {
+          //       if (actionClear.getTarget() != null) {
+          //         Blockade another = (Blockade) this.worldInfo
+          //             .getEntity(actionClear.getTarget());
+          //         if (another != null && this.intersect(blockade, another)) {
+          //           return new ActionClear(another);
+          //         }
+          //       }
+          //       return actionClear;
+          //     }
+          //   } else if (actionMove == null) {
+          //     actionMove = new ActionMove(Lists.newArrayList(road.getID()),
+          //         (int) midX, (int) midY);
+          //   }
+          // }
         }
         if (actionClear != null) {
           return actionClear;
@@ -501,23 +501,23 @@ public class TIMRADExtActionClear extends ExtAction {
           }
         }
       }
-      if (clearBlockade != null && minPointDistance < this.clearDistance) {
-        Vector2D vector = this
-            .scaleClear(this.getVector(agentX, agentY, clearX, clearY));
-        clearX = (int) (agentX + vector.getX());
-        clearY = (int) (agentY + vector.getY());
-        if (this.equalsPoint(this.oldClearX, this.oldClearY, clearX, clearY)) {
-          if (this.count >= this.forcedMove) {
-            this.count = 0;
-            return new ActionMove(Lists.newArrayList(road.getID()), clearX,
-                clearY);
-          }
-          this.count++;
-        }
-        this.oldClearX = clearX;
-        this.oldClearY = clearY;
-        return new ActionClear(clearX, clearY, clearBlockade);
-      }
+      // if (clearBlockade != null && minPointDistance < this.clearDistance) {
+      //   Vector2D vector = this
+      //       .scaleClear(this.getVector(agentX, agentY, clearX, clearY));
+      //   clearX = (int) (agentX + vector.getX());
+      //   clearY = (int) (agentY + vector.getY());
+      //   if (this.equalsPoint(this.oldClearX, this.oldClearY, clearX, clearY)) {
+      //     if (this.count >= this.forcedMove) {
+      //       this.count = 0;
+      //       return new ActionMove(Lists.newArrayList(road.getID()), clearX,
+      //           clearY);
+      //     }
+      //     this.count++;
+      //   }
+      //   this.oldClearX = clearX;
+      //   this.oldClearY = clearY;
+      //   return new ActionClear(clearX, clearY, clearBlockade);
+      // }
     }
     return new ActionMove(Lists.newArrayList(position.getID(), target.getID()));
   }
@@ -557,32 +557,32 @@ public class TIMRADExtActionClear extends ExtAction {
       }
       ActionClear actionClear = null;
       ActionMove actionMove = null;
-      Vector2D vector = this.scaleClear(this.getVector(agentX, agentY, pX, pY));
-      int clearX = (int) (agentX + vector.getX());
-      int clearY = (int) (agentY + vector.getY());
-      vector = this.scaleBackClear(vector);
-      int startX = (int) (agentX + vector.getX());
-      int startY = (int) (agentY + vector.getY());
+      // Vector2D vector = this.scaleClear(this.getVector(agentX, agentY, pX, pY));
+      // int clearX = (int) (agentX + vector.getX());
+      // int clearY = (int) (agentY + vector.getY());
+      // vector = this.scaleBackClear(vector);
+      // int startX = (int) (agentX + vector.getX());
+      // int startY = (int) (agentY + vector.getY());
       for (Blockade blockade : this.worldInfo.getBlockades(road)) {
-        if (this.intersect(startX, startY, pX, pY, blockade)) {
-          if (this.intersect(startX, startY, clearX, clearY, blockade)) {
-            if (actionClear == null) {
-              actionClear = new ActionClear(clearX, clearY, blockade);
-            } else {
-              if (actionClear.getTarget() != null) {
-                Blockade another = (Blockade) this.worldInfo
-                    .getEntity(actionClear.getTarget());
-                if (another != null && this.intersect(blockade, another)) {
-                  return new ActionClear(another);
-                }
-              }
-              return actionClear;
-            }
-          } else if (actionMove == null) {
-            actionMove = new ActionMove(Lists.newArrayList(road.getID()),
-                (int) pX, (int) pY);
-          }
-        }
+        // if (this.intersect(startX, startY, pX, pY, blockade)) {
+        //   if (this.intersect(startX, startY, clearX, clearY, blockade)) {
+        //     if (actionClear == null) {
+        //       actionClear = new ActionClear(clearX, clearY, blockade);
+        //     } else {
+        //       if (actionClear.getTarget() != null) {
+        //         Blockade another = (Blockade) this.worldInfo
+        //             .getEntity(actionClear.getTarget());
+        //         if (another != null && this.intersect(blockade, another)) {
+        //           return new ActionClear(another);
+        //         }
+        //       }
+        //       return actionClear;
+        //     }
+        //   } else if (actionMove == null) {
+        //     actionMove = new ActionMove(Lists.newArrayList(road.getID()),
+        //         (int) pX, (int) pY);
+        //   }
+        // }
       }
       if (actionClear != null) {
         return actionClear;
@@ -729,9 +729,9 @@ public class TIMRADExtActionClear extends ExtAction {
   }
 
 
-  private Vector2D scaleClear(Vector2D vector) {
-    return vector.normalised().scale(this.clearDistance);
-  }
+  // private Vector2D scaleClear(Vector2D vector) {
+  //   return vector.normalised().scale(this.clearDistance);
+  // }
 
 
   private Vector2D scaleBackClear(Vector2D vector) {
@@ -771,15 +771,16 @@ public class TIMRADExtActionClear extends ExtAction {
       return false;
     }
     int activeTime = (hp / damage) + ((hp % damage) != 0 ? 1 : 0);
-    if (this.kernelTime == -1) {
-      try {
-        this.kernelTime = this.scenarioInfo.getKernelTimesteps();
-      } catch (NoSuchConfigOptionException e) {
-        this.kernelTime = -1;
-      }
-    }
-    return damage >= this.thresholdRest
-        || (activeTime + this.agentInfo.getTime()) < this.kernelTime;
+    // if (this.kernelTime == -1) {
+    //   try {
+    //     this.kernelTime = this.scenarioInfo.getKernelTimesteps();
+    //   } catch (NoSuchConfigOptionException e) {
+    //     this.kernelTime = -1;
+    //   }
+    // }
+    // return damage >= this.thresholdRest
+    //     || (activeTime + this.agentInfo.getTime()) < this.kernelTime;
+    return false;
   }
 
 
