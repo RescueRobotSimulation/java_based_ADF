@@ -1,4 +1,4 @@
-package TIMRAD.module.algorithm;
+package TIMRAD_2025.module.algorithm;
 
 import adf.core.agent.communication.MessageManager;
 import adf.core.agent.develop.DevelopData;

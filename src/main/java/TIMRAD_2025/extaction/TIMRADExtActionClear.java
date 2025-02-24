@@ -1,4 +1,4 @@
-package TIMRAD.extaction;
+package TIMRAD_2025.extaction;
 
 import adf.core.agent.action.Action;
 import adf.core.agent.action.common.ActionMove;
@@ -12,41 +12,81 @@ import adf.core.agent.info.WorldInfo;
 import adf.core.agent.module.ModuleManager;
 import adf.core.agent.precompute.PrecomputeData;
 import adf.core.component.extaction.ExtAction;
+import adf.core.component.module.algorithm.DynamicClustering;
 import adf.core.component.module.algorithm.PathPlanning;
+
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+
+import static rescuecore2.standard.entities.StandardEntityURN.REFUGE;
+
+import java.util.*;
+
+// import java.util.ArrayList;
+// import java.util.Collection;
+// import java.util.HashMap;
+// import java.util.HashSet;
+// import java.util.List;
+// import java.util.Map;
+// import java.util.Objects;
+// import java.util.Set;
 import java.util.stream.Collectors;
+
 import rescuecore2.config.NoSuchConfigOptionException;
-import rescuecore2.misc.geometry.GeometryTools2D;
-import rescuecore2.misc.geometry.Line2D;
-import rescuecore2.misc.geometry.Point2D;
-import rescuecore2.misc.geometry.Vector2D;
-import rescuecore2.standard.entities.Area;
-import rescuecore2.standard.entities.Blockade;
-import rescuecore2.standard.entities.Building;
-import rescuecore2.standard.entities.Edge;
-import rescuecore2.standard.entities.Human;
-import rescuecore2.standard.entities.PoliceForce;
-import rescuecore2.standard.entities.Road;
-import rescuecore2.standard.entities.StandardEntity;
-import rescuecore2.standard.entities.StandardEntityURN;
+
+
+
+import rescuecore2.misc.geometry.*;
+
+// import rescuecore2.misc.geometry.GeometryTools2D;
+// import rescuecore2.misc.geometry.Line2D;
+// import rescuecore2.misc.geometry.Point2D;
+// import rescuecore2.misc.geometry.Vector2D;
+import rescuecore2.standard.entities.*;
+
+// import rescuecore2.standard.entities.Area;
+// import rescuecore2.standard.entities.Blockade;
+// import rescuecore2.standard.entities.Building;
+// import rescuecore2.standard.entities.Edge;
+// import rescuecore2.standard.entities.Human;
+// import rescuecore2.standard.entities.PoliceForce;
+// import rescuecore2.standard.entities.Road;
+// import rescuecore2.standard.entities.StandardEntity;
+// import rescuecore2.standard.entities.StandardEntityURN;
 import rescuecore2.worldmodel.EntityID;
+
+
+/**
+ * A collection f=of entity IDs that may be targets for disclosure
+ * key=entity IDs that may be targets of PF actions
+ * value=task for key (whether to disclose or not)
+ */
 
 public class TIMRADExtActionClear extends ExtAction {
 
+  /*Entity ID of the entity that the PF action is targeted for.
+  */
+  private EntityID target;
+
+  /* path planning module which determines the movement path. */
   private PathPlanning pathPlanning;
+
+/* Dynamic Clustering specifies a new path when the movement failed.
+ */
+private DynamicClustering invalidMove;
+
+/* if false opens another piece of rublle. */
+  private boolean getRidof = true;
+
+
+
+
+
+
+
   private int clearDistance;
   private int forcedMove;
   private int thresholdRest;
   private int kernelTime;
-  private EntityID target;
   private Map<EntityID, Set<Point2D>> movePointCache;
   private int oldClearX;
   private int oldClearY;
@@ -60,6 +100,8 @@ public class TIMRADExtActionClear extends ExtAction {
     this.thresholdRest = developData
         .getInteger("adf.impl.extaction.DefaultExtActionClear.rest", 100);
 
+    this.invalidMove = moduleManager.getModule("TIMRAD.PF.ExtActionClear.InvalidMove");
+    
     this.target = null;
     this.movePointCache = new HashMap<>();
     this.oldClearX = 0;
@@ -107,7 +149,9 @@ public class TIMRADExtActionClear extends ExtAction {
     } catch (NoSuchConfigOptionException e) {
       this.kernelTime = -1;
     }
-    this.pathPlanning.precompute(precomputeData);
+    this.pathPlanning.resume(precomputeData);
+    this.invalidMove.resume(precomputeData);
+
     return this;
   }
 
@@ -125,6 +169,7 @@ public class TIMRADExtActionClear extends ExtAction {
       this.kernelTime = -1;
     }
     this.pathPlanning.preparate();
+    this.invalidMove.preparate();
     return this;
   }
 
@@ -136,6 +181,10 @@ public class TIMRADExtActionClear extends ExtAction {
       return this;
     }
     this.pathPlanning.updateInfo(messageManager);
+
+    this.invalidMove.updateInfo(messageManager);
+
+    this.getRidof = this.cannotreach();
     return this;
   }
 
@@ -333,8 +382,9 @@ public class TIMRADExtActionClear extends ExtAction {
       }
     }
     return moveAction;
+    
   }
-
+  
 
   private Action getAreaClearAction(PoliceForce police,
       StandardEntity targetEntity) {
@@ -823,4 +873,37 @@ public class TIMRADExtActionClear extends ExtAction {
     }
     return firstResult != null ? new ActionMove(firstResult) : null;
   }
+
+  
+
+
+  /*Action needs to be done by the agent when fails to reach to the destination
+  * @return invalidMove clustering is carring out returing the result.
+  */
+
+  private boolean cannotreach() {
+    final EntityID currentposition = this.agentInfo.getID();
+    this.invalidMove.calc();
+    return this.invalidMove.getClusterIndex(currentposition) >= 0;
+  }
+
+    /* Escape to nearest refuge
+      * @return results the refuge if it's not null.
+      */
+  // private EntityID bestRefugeSeeker() {
+  //   final EntityID currentposition = this.agentInfo.getID();
+  //   final Optional<EntityID> ret = this.worldInfo.getEntityIDsOfType(REFUGE)
+  //       .stream()
+  //       .min((initR, finR) -> {
+  //         final double x1 = this.worldInfo.getDistance(currentposition, initR) +
+  //           this.worldInfo.getDistance(initR, this.target);
+  //         final double x2 = this.worldInfo.getDistance(finR, this.target) + 
+  //           this.worldInfo.getDistance(finR, this.target);
+  //         return Double.compare(x1, x2);
+  //       });
+  //   return ret.orElse(null);
+  // }
 }
+
+
+
