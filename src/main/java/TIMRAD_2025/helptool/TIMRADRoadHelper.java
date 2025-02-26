@@ -13,7 +13,7 @@ import rescuecore2.standard.entities.*;
 import rescuecore2.worldmodel.EntityID;
 import TIMRAD_2025.helptool.object.TIMRADLineOfSightPerception;
 import TIMRAD_2025.helptool.TIMRADEscapePointHelper;
-import TIMRAD_2025.standard.EntranceHelper;
+// import TIMRAD_2025.standard.EntranceHelper;
 
 
 
@@ -48,7 +48,7 @@ public class TIMRADRoadHelper {
 		this.world = world;
 		this.selfRoad = road;
 		this.selfId = road.getID();
-		this.lineOfSightPerception = new TIMRADLineOfSightPerception(world);
+		// this.lineOfSightPerception = new TIMRADLineOfSightPerception(world);
 		this.TIMRADEdges = createTIMRADEdges();
 
 		this.CLEAR_WIDTH = scenarioInfo.getClearRepairRad();
@@ -346,14 +346,14 @@ public class TIMRADRoadHelper {
 		return this.isEntrance;
 	}
 
-	public boolean isEntranceNeighbour(EntranceHelper entrance) {
-		for (EntityID next : selfRoad.getNeighbours()) {
-			StandardEntity neig = world.getEntity(next);
-			if (neig instanceof Road && entrance.containsKey((Road) neig))
-				return true;
-		}
-		return false;
-	}
+	// public boolean isEntranceNeighbour(EntranceHelper entrance) {
+	// 	for (EntityID next : selfRoad.getNeighbours()) {
+	// 		StandardEntity neig = world.getEntity(next);
+	// 		if (neig instanceof Road && entrance.containsKey((Road) neig))
+	// 			return true;
+	// 	}
+	// 	return false;
+	// }
 
 	public void setEntrance(boolean entrance) {
 		this.isEntrance = entrance;
@@ -566,9 +566,9 @@ public class TIMRADRoadHelper {
 	private TIMRADEscapePointHelper findPoints(TIMRADEdgeHelper TIMRADEdge, Polygon expan, TIMRADBlockadeHelper next) {
 		if (TIMRADEdge.isPassable()) {
 		} else {
-			if (hasIntersection(expan, TIMRADEdge.getLine())) {
-				return null;
-			}
+			// if (hasIntersection(expan, TIMRADEdge.getLine())) {
+			// 	return null;
+			// }
 			double minDistance = Double.MAX_VALUE, distance;
 			Pair<Integer, Integer> minDistanceVertex = null;
 
@@ -715,23 +715,23 @@ public class TIMRADRoadHelper {
 	}
 
 
-	public boolean hasIntersection(Polygon polygon, Line2D line) {
-		List<Line2D> polyLines = getLines(polygon);
-		for (Line2D ln : polyLines) {
+	// public boolean hasIntersection(Polygon polygon, Line2D line) {
+	// 	List<Line2D> polyLines = getLines(polygon);
+	// 	for (Line2D ln : polyLines) {
 
-			Line2D line_1 = new Line2D(line.getOrigin().getX(),
-					line.getOrigin().getY(), line.getEndPoint().getX(), line.getEndPoint().getY());
+	// 		Line2D line_1 = new Line2D(line.getOrigin().getX(),
+	// 				line.getOrigin().getY(), line.getEndPoint().getX(), line.getEndPoint().getY());
 
-			Line2D line_2 = new Line2D(ln.getOrigin().getX(), ln.getOrigin().getY(),
-					ln.getOrigin().getX(), ln.getOrigin().getY());
+	// 		Line2D line_2 = new Line2D(ln.getOrigin().getX(), ln.getOrigin().getY(),
+	// 				ln.getOrigin().getX(), ln.getOrigin().getY());
 
-			if (Line2D.intersects(line_1, line_2)) {
+	// 		if (math.geom2d.line.Line2D.intersects(line_1, line_2)) {
 
-				return true;
-			}
-		}
-		return false;
-	}
+	// 			return true;
+	// 		}
+	// 	}
+	// 	return false;
+	// }
 
 	private List<Line2D> getLines(Polygon polygon) {
 		List<Line2D> lines = new LinkedList<>();

@@ -77,4 +77,14 @@ public class TIMRADBlockade {
 		if (!blockedEdges.contains(TIMRADEdge))
 			blockedEdges.add(TIMRADEdge);
 	}
+
+    public static int size() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'size'");
+    }
+
+    public static TIMRADBlockade get(int i) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    }
 }

@@ -514,13 +514,13 @@ public class Util {
 		return 0.0D;
 	}
 
-	public static Line2D convertLine(Line2D line2D) {
-		double x1 = line2D.getOrigin().getX();
-		double y1 = line2D.getOrigin().getY();
-		double x2 = line2D.getEndPoint().getX();
-		double y2 = line2D.getEndPoint().getY();
-		return new line.Line2D(x1, y1, x2, y2);
-	}
+	// public static Line2D convertLine(Line2D line2D) {
+	// 	double x1 = line2D.getOrigin().getX();
+	// 	double y1 = line2D.getOrigin().getY();
+	// 	double x2 = line2D.getEndPoint().getX();
+	// 	double y2 = line2D.getEndPoint().getY();
+	// 	return new line.Line2D(x1, y1, x2, y2);
+	// }
 
 	public static java.awt.geom.Line2D convertLine2(Line2D line2D) {
 		double x1 = line2D.getOrigin().getX();
@@ -530,19 +530,19 @@ public class Util {
 		return new java.awt.geom.Line2D.Double(x1, y1, x2, y2);
 	}
 
-	public static boolean isCollinear(Line2D l1, Line2D l2, double threshold) {
-		if (!isCollinear(l1.getVector(), l2.getVector(), threshold)) {//判断向量是否共线
-			return false;
-		} else {
-			double dx = l1.getX2() - l1.getX1();
-			double dy = l1.getY2() - l1.getY1();
-			if (Math.abs(dx) > Math.abs(dy)) {
-				return Math.abs((l2.getX1() - l1.getX1()) * dy / dx + l1.getY1() - l2.getY1()) <= TIMRADConstants.COLLINEAR_THRESHOLD;
-			} else {
-				return Math.abs((l2.getY1() - l1.getY1()) * dx / dy + l1.getX1() - l2.getX1()) <= TIMRADConstants.COLLINEAR_THRESHOLD;
-			}
-		}
-	}
+	// public static boolean isCollinear(Line2D l1, Line2D l2, double threshold) {
+	// 	if (!isCollinear(l1.getVector(), l2.getVector(), threshold)) {//判断向量是否共线
+	// 		return false;
+	// 	} else {
+	// 		double dx = l1.getX2() - l1.getX1();
+	// 		double dy = l1.getY2() - l1.getY1();
+	// 		if (Math.abs(dx) > Math.abs(dy)) {
+	// 			return Math.abs((l2.getX1() - l1.getX1()) * dy / dx + l1.getY1() - l2.getY1()) <= TIMRADConstants.COLLINEAR_THRESHOLD;
+	// 		} else {
+	// 			return Math.abs((l2.getY1() - l1.getY1()) * dx / dy + l1.getX1() - l2.getX1()) <= TIMRADConstants.COLLINEAR_THRESHOLD;
+	// 		}
+	// 	}
+	// }
 
 	public static boolean containsEach(Collection collection1, Collection collection2) {
 		for (Object object : collection1) {
@@ -577,11 +577,11 @@ public class Util {
 
 	}
 
-	public static boolean isCollinear(Vector2D v1, Vector2D v2, double threshold) {
-		v1 = v1.getNormalizedVector();
-		v2 = v2.getNormalizedVector();
-		return Math.abs(v1.getX() * v2.getY() - v1.getY() * v2.getX()) < threshold;
-	}
+	// public static boolean isCollinear(Vector2D v1, Vector2D v2, double threshold) {
+	// 	v1 = v1.getNormalizedVector();
+	// 	v2 = v2.getNormalizedVector();
+	// 	return Math.abs(v1.getX() * v2.getY() - v1.getY() * v2.getX()) < threshold;
+	// }
 
 	public static List<Integer> fetchIdValueFromElements(Collection<StandardEntity> elements) {
 		try {
@@ -671,4 +671,15 @@ public class Util {
 	public static Point convertPoint(Point2D point2D) {
 		return new Point((int) point2D.getX(), (int) point2D.getY());
 	}
+
+	public static math.geom2d.line.Line2D convertLine(Line2D line) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'convertLine'");
+	}
+
+    public static boolean isCollinear(math.geom2d.line.Line2D exceptLine, math.geom2d.line.Line2D line,
+            double collinearThreshold) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isCollinear'");
+    }
 }

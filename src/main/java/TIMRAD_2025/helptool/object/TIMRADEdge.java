@@ -199,4 +199,19 @@ public class TIMRADEdge {
 		}
 		return null;
 	}
+
+    public static int size() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'size'");
+    }
+
+    public static TIMRADEdge get(int i) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    }
+
+    public static boolean contains(TIMRADEdge edge) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'contains'");
+    }
 }

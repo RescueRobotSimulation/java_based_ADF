@@ -91,11 +91,11 @@ public class Ruler {
         return getDistance(polygon, point);
     }
 
-    public static double getDistance(Polygon polygon, Point2D point) {
+    // public static double getDistance(Polygon polygon, Point2D point) {
         
-        rescuecore2.misc.geometry.Point2D tempPoint = new rescuecore2.misc.geometry.Point2D(point.x, point.y);
-        return getDistance(polygon, tempPoint);
-    }
+    //     rescuecore2.misc.geometry.Point2D tempPoint = new rescuecore2.misc.geometry.Point2D(point.x, point.y);
+    //     return getDistance(polygon, tempPoint);
+    // }
 
     public static double getDistance(Polygon polygon, Point point) {
         rescuecore2.misc.geometry.Point2D tempPoint = new rescuecore2.misc.geometry.Point2D(point.x, point.y);

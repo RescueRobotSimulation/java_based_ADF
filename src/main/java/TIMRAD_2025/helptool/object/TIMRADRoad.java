@@ -522,7 +522,7 @@ public class TIMRADRoad {
 	}
 
 	public TIMRADEdge getTIMRADEdgeInPoint(Point2D middlePoint) {
-		for (TIMRADEdges next : TIMRADEdges) {
+		for (TIMRADEdge next : TIMRADEdges) {
 			if (contains(next.getLine(), middlePoint, 1.0))
 				return next;
 		}
@@ -679,7 +679,7 @@ public class TIMRADRoad {
 				break;
 			}
 		}
-		List<TIMRADBlockade> blockades = new LinkedList<>(getTIMRAdBlockades());
+		List<TIMRADBlockade> blockades = new LinkedList<>(getTIMRADBlockades());
 
 		for (TIMRADEscapePoint next : getEscapePoint(this, 500)) {
 			blockades.removeAll(next.getRelateBlockade());
@@ -1089,7 +1089,7 @@ public class TIMRADRoad {
 		List<Line2D> polyLines = getLines(polygon);
 		for (Line2D ln : polyLines) {
 
-			Line2D line_1 = new math.geom2d.line.Line2D(
+			math.geom2d.line.Line2D line_1 = new math.geom2d.line.Line2D(
 					line.getOrigin().getX(), line.getOrigin().getY(),
 					line.getEndPoint().getX(), line.getEndPoint().getY());
 
@@ -1194,7 +1194,7 @@ public class TIMRADRoad {
 	public List<Pair<TIMRADEdge, Line2D>> getEdgeLinesExcept(TIMRADEdge exceptEdge) {
 		List<Pair<TIMRADEdge, Line2D>> result = new ArrayList<>();
 		math.geom2d.line.Line2D exceptLine = Util.convertLine(exceptEdge.getLine());
-		for (TIMRADEdge edge : TIMRADEdge) {
+		for (TIMRADEdge edge : TIMRADEdges) {
 			math.geom2d.line.Line2D line = Util.convertLine(edge.getLine());
 			if (!Util.isCollinear(exceptLine, line, COLLINEAR_THRESHOLD)) {
 				result.add(new Pair<>(edge, edge.getLine()));
@@ -1261,6 +1261,7 @@ public class TIMRADRoad {
 		return visibleFrom;
 	}
 
+	@SuppressWarnings("unused")
 	public void setVisibleFrom(Set<EntityID> visibleFrom) {
 		this.visibleFrom = visibleFrom;
 		if (DebugHelper.DEBUG_MODE && !world.getScenarioInfo().getRawConfig().getBooleanValue(ConfigKey.KEY_PRECOMPUTE, false)) {
