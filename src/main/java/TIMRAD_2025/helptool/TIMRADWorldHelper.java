@@ -5,7 +5,7 @@ import TIMRAD_2025.debugger.DebugHelper;
 import TIMRAD_2025.helptool.PolygonScaler;
 import TIMRAD_2025.module.algorithm.CompositeConvexHull;
 import TIMRAD_2025.helptool.Ruler;
-import TIMRAD_2025.helptool.simplePartition.Line;
+import TIMRAD_2025.standard.simplePartition.Line;
 import TIMRAD_2025.helptool.GraphHelper;
 import TIMRAD_2025.helptool.MyEdge;
 import TIMRAD_2025.helptool.object.*;

@@ -27,13 +27,13 @@ public class PolygonScaler {
 		int[] xs = new int[sourcePolygon.npoints];
 		int[] ys = new int[sourcePolygon.npoints];
 
-		for (int i = 0; i < sourcePolygon.npoints; i++) {
-			p1 = new Point2D(sourcePolygon.xpoints[i], sourcePolygon.ypoints[i]);
-			p2 = p1.scale(scale);
-			xs[i] = (int) p2.getX();
-			ys[i] = (int) p2.getY();
-			p1.clone();
-		}
+		// for (int i = 0; i < sourcePolygon.npoints; i++) {
+		// 	p1 = new Point2D(sourcePolygon.xpoints[i], sourcePolygon.ypoints[i]);
+		// 	p2 = p1.scale(scale);
+		// 	xs[i] = (int) p2.getX();
+		// 	ys[i] = (int) p2.getY();
+		// 	p1.clone();
+		// }
 
 		Polygon preScaledPolygon = new Polygon(xs, ys, sourcePolygon.npoints);
 		scaledPolygon = reAllocatePolygon(preScaledPolygon, sourcePolygon);///place at the center position

@@ -65,5 +65,5 @@ task launch(type: JavaExec) {
   classpath += files('.')
   classpath += sourceSets.main.runtimeClasspath
   mainClass = 'adf.core.Main'
-  maxHeapSize = '2048m'
+  maxHeapSize = '48G'
 }

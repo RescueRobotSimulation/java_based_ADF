@@ -23,6 +23,7 @@ import rescuecore2.misc.geometry.Vector2D;
 import rescuecore2.standard.entities.*;
 import rescuecore2.worldmodel.EntityID;
 
+
 import java.awt.*;
 import java.util.List;
 import java.util.*;

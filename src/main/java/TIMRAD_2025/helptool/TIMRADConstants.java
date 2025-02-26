@@ -53,4 +53,5 @@ public interface TIMRADConstants {
 
 
     public static final String PRECOMPUTE_DIRECTORY = "precomp_data/";
+    public static final String WORLD_HELPER_FIRE_BRIGADE = null;
 }

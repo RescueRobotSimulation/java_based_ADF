@@ -1,7 +1,5 @@
-package TIMRAD_2025.helptool.object;
+package TIMRAD_2025.standard;
 
-import TIMRAD_2025.helptool.TIMRADWorldHelper;
-import TIMRAD_2025.helptool.object.TIMRADLineOfSightPerception.TIMRADRay;
 import adf.core.agent.info.WorldInfo;
 import rescuecore2.misc.Pair;
 import rescuecore2.misc.geometry.GeometryTools2D;
@@ -15,16 +13,14 @@ import java.io.Serializable;
 import java.util.*;
 
 public class TIMRADLineOfSightPerception {
-	private int viewDistance = 30000;
-	private int rayCount = 72;
+	private static final int VIEW_DISTANCE = 30000;
+	private static final int RAY_COUNT = 72;
 	private static final IntersectionSorter INTERSECTION_SORTER = new IntersectionSorter();
-	private int errorThreshold = 500;
 
-	private TIMRADWorldHelper worldHelper;
+	private WorldInfo world;
 
-	public TIMRADLineOfSightPerception(TIMRADWorldHelper world) {
-		this.worldHelper = world;
-		viewDistance = world.getConfig().viewDistance;
+	public TIMRADLineOfSightPerception(WorldInfo model) {
+		this.world = model;
 	}
 
 	@Override
@@ -33,14 +29,13 @@ public class TIMRADLineOfSightPerception {
 	}
 
 	public List<EntityID> getVisibleAreas(EntityID areaID) {
-		Area area = worldHelper.getEntity(areaID, Area.class);
-		List<EntityID> result = new ArrayList<EntityID>();
-		// Look for objects within range
-		Pair<Integer, Integer> location = worldHelper.getWorldInfo().getLocation(area);
+		Area area = (Area) world.getEntity(areaID);
+		List<EntityID> result = new LinkedList<EntityID>();
+		Pair<Integer, Integer> location = world.getLocation(areaID);
 		if (location != null) {
 			int x = location.first(), y = location.second();
 			Point2D point = new Point2D(x, y);
-			Collection<StandardEntity> nearby = worldHelper.getObjectsInRange(x, y, viewDistance);
+			Collection<StandardEntity> nearby = world.getObjectsInRange(x, y, VIEW_DISTANCE);
 			Collection<StandardEntity> visible = findVisibleAreas(area, point, nearby);
 			for (StandardEntity next : visible) {
 				if (next instanceof Area) {
@@ -52,13 +47,13 @@ public class TIMRADLineOfSightPerception {
 	}
 
 	private Collection<StandardEntity> findVisibleAreas(Area area, Point2D location,
-                                                        Collection<StandardEntity> nearby) {
+			Collection<StandardEntity> nearby) {
 		Collection<LineInfo> lines = getAllLines(nearby);
-		double dAngle = Math.PI * 2 / rayCount;
+		double dAngle = Math.PI * 2 / RAY_COUNT;
 		Collection<StandardEntity> result = new HashSet<StandardEntity>();
-		for (int i = 0; i < rayCount; ++i) {
+		for (int i = 0; i < RAY_COUNT; ++i) {
 			double angle = i * dAngle;
-			Vector2D vector = new Vector2D(Math.sin(angle), Math.cos(angle)).scale(viewDistance);
+			Vector2D vector = new Vector2D(Math.sin(angle), Math.cos(angle)).scale(VIEW_DISTANCE);
 			TIMRADRay ray = new TIMRADRay(new Line2D(location, vector), lines);
 			for (LineInfo hit : ray.getLinesHit()) {
 				StandardEntity e = hit.getEntity();
@@ -96,52 +91,15 @@ public class TIMRADLineOfSightPerception {
 		return result;
 	}
 
-	public Set<TIMRADRay> findRaysNotHit(Point2D location, Collection<StandardEntity> obstacles) {
-		Collection<LineInfo> lines = getAllLines(obstacles);
-		double dAngle = Math.PI * 2 / rayCount;
-		Set<TIMRADRay> result = new HashSet<>();
-		for (int i = 0; i < rayCount; ++i) {
-			double angle = i * dAngle;
-			Vector2D vector = new Vector2D(Math.sin(angle), Math.cos(angle)).scale(viewDistance);
-			Point2D distanceLocation = new Point2D(
-					location.getX() + errorThreshold * Math.sin(angle),
-					location.getY() + errorThreshold * Math.cos(angle)
-			);
-			TIMRADRay ray = new TIMRADRay(new Line2D(distanceLocation, vector), lines);
-			if (ray.getLinesHit().isEmpty()) {
-				result.add(ray);
-			}
-		}
-		return result;
-	}
-
-	public Set<TIMRADRay> findRaysNotHit(Point2D location, Collection<StandardEntity> obstacles, int distance) {
-		Collection<LineInfo> lines = getAllLines(obstacles);
-		double dAngle = Math.PI * 2 / rayCount;
-		Set<TIMRADRay> result = new HashSet<>();
-		for (int i = 0; i < rayCount; ++i) {
-			double angle = i * dAngle;
-			Vector2D vector = new Vector2D(Math.sin(angle), Math.cos(angle)).scale(distance);
-			Point2D distanceLocation = new Point2D(
-					location.getX() + errorThreshold * Math.sin(angle),
-					location.getY() + errorThreshold * Math.cos(angle)
-			);
-			TIMRADRay ray = new TIMRADRay(new Line2D(distanceLocation, vector), lines);
-			if (ray.getLinesHit().isEmpty()) {
-				result.add(ray);
-			}
-		}
-		return result;
-	}
-	
-	public class TIMRADRay {
+	private static class TIMRADRay {
 		private Line2D ray;
 		private double length;
 		private List<LineInfo> hit;
 
 		public TIMRADRay(Line2D ray, Collection<LineInfo> otherLines) {
 			this.ray = ray;
-			List<Pair<LineInfo, Double>> intersections = new ArrayList<Pair<LineInfo, Double>>();
+			List<Pair<LineInfo, Double>> intersections = new LinkedList<Pair<LineInfo, Double>>();
+			// Find intersections with other lines
 			for (LineInfo other : otherLines) {
 				double d1 = ray.getIntersection(other.getLine());
 				double d2 = other.getLine().getIntersection(ray);
@@ -150,7 +108,7 @@ public class TIMRADLineOfSightPerception {
 				}
 			}
 			Collections.sort(intersections, INTERSECTION_SORTER);
-			hit = new ArrayList<LineInfo>();
+			hit = new LinkedList<LineInfo>();
 			length = 1;
 			for (Pair<LineInfo, Double> next : intersections) {
 				LineInfo l = next.first();
@@ -176,44 +134,44 @@ public class TIMRADLineOfSightPerception {
 			return Collections.unmodifiableList(hit);
 		}
 	}
-	
+
 	private static class LineInfo {
 		private Line2D line;
-	    private StandardEntity entity;
-	    private boolean blocking;
+		private StandardEntity entity;
+		private boolean blocking;
 
-	    public LineInfo(Line2D line, StandardEntity entity, boolean blocking) {
-	        this.line = line;
-	        this.entity = entity;
-	        this.blocking = blocking;
-	    }
+		public LineInfo(Line2D line, StandardEntity entity, boolean blocking) {
+			this.line = line;
+			this.entity = entity;
+			this.blocking = blocking;
+		}
 
-	    public Line2D getLine() {
-	        return line;
-	    }
+		public Line2D getLine() {
+			return line;
+		}
 
-	    public StandardEntity getEntity() {
-	        return entity;
-	    }
+		public StandardEntity getEntity() {
+			return entity;
+		}
 
-	    public boolean isBlocking() {
-	        return blocking;
-	    }
+		public boolean isBlocking() {
+			return blocking;
+		}
 	}
-	
+
 	@SuppressWarnings("serial")
 	private static class IntersectionSorter implements Comparator<Pair<LineInfo, Double>>, Serializable {
 		@Override
-	    public int compare(Pair<LineInfo, Double> a, Pair<LineInfo, Double> b) {
-	        double d1 = a.second();
-	        double d2 = b.second();
-	        if (d1 < d2) {
-	            return -1;
-	        }
-	        if (d1 > d2) {
-	            return 1;
-	        }
-	        return 0;
-	    }
+		public int compare(Pair<LineInfo, Double> a, Pair<LineInfo, Double> b) {
+			double d1 = a.second();
+			double d2 = b.second();
+			if (d1 < d2) {
+				return -1;
+			}
+			if (d1 > d2) {
+				return 1;
+			}
+			return 0;
+		}
 	}
 }

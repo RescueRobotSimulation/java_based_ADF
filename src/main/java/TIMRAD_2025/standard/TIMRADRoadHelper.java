@@ -1,8 +1,7 @@
-package TIMRAD_2025.helptool;
+package TIMRAD_2025.standard;
 
 import TIMRAD_2025.helptool.ExpandApexes;
 import TIMRAD_2025.helptool.Util;
-import TIMRAD_2025.helptool.TIMRADEdge;
 import adf.core.agent.info.ScenarioInfo;
 import adf.core.agent.info.WorldInfo;
 import rescuecore2.misc.Pair;
@@ -11,11 +10,6 @@ import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.standard.entities.*;
 import rescuecore2.worldmodel.EntityID;
-import TIMRAD_2025.helptool.object.TIMRADLineOfSightPerception;
-import TIMRAD_2025.helptool.TIMRADEscapePointHelper;
-import TIMRAD_2025.standard.EntranceHelper;
-
-
 
 import java.awt.*;
 import java.awt.geom.Area;
@@ -346,14 +340,14 @@ public class TIMRADRoadHelper {
 		return this.isEntrance;
 	}
 
-	public boolean isEntranceNeighbour(EntranceHelper entrance) {
-		for (EntityID next : selfRoad.getNeighbours()) {
-			StandardEntity neig = world.getEntity(next);
-			if (neig instanceof Road && entrance.containsKey((Road) neig))
-				return true;
-		}
-		return false;
-	}
+	// public boolean isEntranceNeighbour(EntranceHelper entrance) {
+	// 	for (EntityID next : selfRoad.getNeighbours()) {
+	// 		StandardEntity neig = world.getEntity(next);
+	// 		if (neig instanceof Road && entrance.containsKey((Road) neig))
+	// 			return true;
+	// 	}
+	// 	return false;
+	// }
 
 	public void setEntrance(boolean entrance) {
 		this.isEntrance = entrance;
@@ -575,7 +569,7 @@ public class TIMRADRoadHelper {
 			for (Pair<Integer, Integer> vertex : next.getVertexesList()) {
 
 				Pair<Double, Boolean> dis = ptSegDistSq(TIMRADEdge.getStart().getX(), TIMRADEdge.getStart().getY(),
-				TIMRADEdge.getEnd().getX(), TIMRADEdge.getEnd().getY(), vertex.first(), vertex.second());
+						TIMRADEdge.getEnd().getX(), TIMRADEdge.getEnd().getY(), vertex.first(), vertex.second());
 
 				if (dis.second().booleanValue())
 					continue;
@@ -719,13 +713,13 @@ public class TIMRADRoadHelper {
 		List<Line2D> polyLines = getLines(polygon);
 		for (Line2D ln : polyLines) {
 
-			Line2D line_1 = new Line2D(line.getOrigin().getX(),
+			math.geom2d.line.Line2D line_1 = new math.geom2d.line.Line2D(line.getOrigin().getX(),
 					line.getOrigin().getY(), line.getEndPoint().getX(), line.getEndPoint().getY());
 
-			Line2D line_2 = new Line2D(ln.getOrigin().getX(), ln.getOrigin().getY(),
+			math.geom2d.line.Line2D line_2 = new math.geom2d.line.Line2D(ln.getOrigin().getX(), ln.getOrigin().getY(),
 					ln.getOrigin().getX(), ln.getOrigin().getY());
 
-			if (Line2D.intersects(line_1, line_2)) {
+			if (math.geom2d.line.Line2D.intersects(line_1, line_2)) {
 
 				return true;
 			}

@@ -616,9 +616,9 @@ public class TIMRADRoad {
 	}
 
 	public List<TIMRADEdge> getTIMRADEdgesTo(EntityID neighbourId) {
-		List<TIMRADEdges> result = new ArrayList<>();
+		List<TIMRADEdge> result = new ArrayList<>();
 
-		for (TIMRADEdges next : TIMRADEdges) {
+		for (TIMRADEdge next : TIMRADEdges) {
 			if (next.isPassable() && next.getNeighbours().first().equals(neighbourId)) {
 				result.add(next);
 			}
@@ -628,9 +628,9 @@ public class TIMRADRoad {
 	}
 
 	public Set<TIMRADEdge> getPassableEdges() {
-		Set<TIMRADEdges> result = new HashSet<>();
+		Set<TIMRADEdge> result = new HashSet<>();
 
-		for (TIMRADEdges next : TIMRADEdges) {
+		for (TIMRADEdge next : TIMRADEdges) {
 			if (next.isPassable() && !next.isBlocked()) {
 				result.add(next);
 			}
@@ -667,8 +667,8 @@ public class TIMRADRoad {
 		boolean isPassable = true;
 		List<Polygon> blockadePolygons = getBlockadePolygons(10);
 		for (Polygon polygon : blockadePolygons) {
-			for (TIMRADEdges edge : TIMRADEdges) {
-				TIMRADEdges oppositeEdge = getOppositeEdge(edge);
+			for (TIMRADEdge edge : TIMRADEdges) {
+				TIMRADEdge oppositeEdge = getOppositeEdge(edge);
 				if (Util.hasIntersectLine(polygon, Util.improveLineBothSides(edge.getLine(), 300000)) &&
 						Util.hasIntersectLine(polygon, Util.improveLineBothSides(oppositeEdge.getLine(), 300000))) {
 					isPassable = false;
@@ -1171,7 +1171,7 @@ public class TIMRADRoad {
 
 	public List<Pair<TIMRADEdge, Line2D>> getPassableEdgeLines() {
 		List<Pair<TIMRADEdge, Line2D>> result = new ArrayList<>();
-		for (TIMRADEdge edge : TIMRADEdge) {
+		for (TIMRADEdge edge : TIMRADEdges) {
 			if (edge.isPassable()) {
 				result.add(new Pair<>(edge, edge.getLine()));
 			}
@@ -1182,7 +1182,7 @@ public class TIMRADRoad {
 	public List<Pair<TIMRADEdge, Line2D>> getPassableEdgeLinesExcept(TIMRADEdge exceptEdge) {
 		List<Pair<TIMRADEdge, Line2D>> result = new ArrayList<>();
 		math.geom2d.line.Line2D exceptLine = Util.convertLine(exceptEdge.getLine());
-		for (TIMRADEdge edge : TIMRADEdge) {
+		for (TIMRADEdge edge : TIMRADEdges) {
 			math.geom2d.line.Line2D line = Util.convertLine(edge.getLine());
 			if (edge.isPassable() && Util.isCollinear(exceptLine, line, COLLINEAR_THRESHOLD)) {
 				result.add(new Pair<>(edge, edge.getLine()));
@@ -1240,6 +1240,7 @@ public class TIMRADRoad {
 		return this.TIMRADBlockades;
 	}
 
+	@SuppressWarnings("unused")
 	public void setObservableAreas(List<EntityID> observableAreas) {
 		this.observableAreas = observableAreas;
 		if (DebugHelper.DEBUG_MODE && !world.getScenarioInfo().getRawConfig().getBooleanValue(ConfigKey.KEY_PRECOMPUTE, false)) {
