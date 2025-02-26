@@ -132,7 +132,7 @@ public class TIMRADExtActionClear extends ExtAction {
         if (this.getCountUpdateInfo() >= 2) {
             return this;
         }
-        this.pathPlanning.updateInfo(messageManager);
+        this.pathPlanning.updateInfo(messageManager);////
         this.world.updateInfo(messageManager);
         this.selfLocation = worldInfo.getLocation(agentInfo.getID());
         return this;
