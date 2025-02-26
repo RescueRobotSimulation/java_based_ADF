@@ -1,9 +1,13 @@
 package TIMRAD_2025.module.algorithm;
 
-import math.geom2d.Point2D;
-import math.geom2d.line.Line2D;
+// import math.geom2d.Point2D;
+// import math.geom2d.line.Line2D;
 import math.geom2d.polygon.Polygon2D;
 import math.geom2d.polygon.convhull.JarvisMarch2D;
+
+import rescuecore2.misc.geometry.Line2D;
+import rescuecore2.misc.geometry.Point2D;
+
 
 import java.awt.*;
 import java.util.List;
