@@ -45,7 +45,7 @@ public class FbUtilities {
 
 	public SortedSet<Pair<Pair<EntityID, Double>, Double>> reRankBuildings(
             SortedSet<Pair<Pair<EntityID, Double>, Double>> buildings, FireBrigade fbAgent) {
-		TIMRADBuilding csuBuilding;
+		TIMRADBuilding TIMRADBuilding;
 		EntityID agentId = fbAgent.getID();
 		SortedSet<Pair<Pair<EntityID, Double>, Double>> result = new TreeSet<>(pairComparator_new);
 		Set<TIMRADBuilding> buildingsExtinguishable = getBuildingInExtinguishableRange(this.worldHelper, agentId);
@@ -58,23 +58,23 @@ public class FbUtilities {
 			AstarCount = 3;
 
 		for (Pair<Pair<EntityID, Double>, Double> next : buildings) {
-			csuBuilding = worldHelper.getCsuBuilding(next.first().first());
+			TIMRADBuilding = worldHelper.getTIMRADBuilding(next.first().first());
 
 			if (i >= AstarCount) {
-				result.add(new Pair<Pair<EntityID, Double>, Double>(next.first(), csuBuilding.BUILDING_VALUE));
+				result.add(new Pair<Pair<EntityID, Double>, Double>(next.first(), TIMRADBuilding.BUILDING_VALUE));
 				i++;
 				continue;
 			}
 
-			inMyExtiguishableRange = buildingsExtinguishable.contains(csuBuilding);
-			EntityID location = getNearest(worldHelper,csuBuilding.getAreasInExtinguishableRange(), agentId);
+			inMyExtiguishableRange = buildingsExtinguishable.contains(TIMRADBuilding);
+			EntityID location = getNearest(worldHelper,TIMRADBuilding.getAreasInExtinguishableRange(), agentId);
 
 			if (inMyExtiguishableRange /*&& isReacable(worldHelper, router, location)*/) {
-				result.add(new Pair<Pair<EntityID, Double>, Double>(next.first(), csuBuilding.BUILDING_VALUE));
+				result.add(new Pair<Pair<EntityID, Double>, Double>(next.first(), TIMRADBuilding.BUILDING_VALUE));
 				i++;
 			} else {
-				csuBuilding.BUILDING_VALUE -= 10000; ///*
-				result.add(new Pair<Pair<EntityID, Double>, Double>(next.first(), csuBuilding.BUILDING_VALUE));
+				TIMRADBuilding.BUILDING_VALUE -= 10000; ///*
+				result.add(new Pair<Pair<EntityID, Double>, Double>(next.first(), TIMRADBuilding.BUILDING_VALUE));
 				i++;
 			}
 		}
@@ -88,7 +88,7 @@ public class FbUtilities {
 		for (StandardEntity entity : inRange) {
 			if (entity instanceof Building) {
 				if (world.getDistance(entity.getID(), source) < distance)
-					result.add(world.getCsuBuilding(entity.getID()));
+					result.add(world.getTIMRADBuilding(entity.getID()));
 			}
 		}
 		return result;

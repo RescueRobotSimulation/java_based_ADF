@@ -12,6 +12,9 @@ import rescuecore2.misc.geometry.Point2D;
 import rescuecore2.standard.entities.*;
 import rescuecore2.worldmodel.EntityID;
 import TIMRAD_2025.helptool.object.TIMRADLineOfSightPerception;
+import TIMRAD_2025.helptool.TIMRADEscapePointHelper;
+
+
 import java.awt.*;
 import java.awt.geom.Area;
 import java.util.List;
@@ -270,7 +273,7 @@ public class TIMRADRoadHelper {
 	public List<TIMRADEdgeHelper> getTIMRADEdgeTo(EntityID neighbourId) {
 		List<TIMRADEdgeHelper> result = new LinkedList<>();
 
-		for (TIMRADEdgeHelper next : TIMRADEdge) {
+		for (TIMRADEdgeHelper next : TIMRADEdges) {
 			if (next.isPassable() && next.getNeighbours().first().equals(neighbourId)) {
 				result.add(next);
 			}

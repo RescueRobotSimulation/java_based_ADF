@@ -194,11 +194,11 @@ public class TIMRADEdge {
 				line.getOrigin().getY() - line.getEndPoint().getY());
 	}
 
-	public TIMRADEdge getOtherSideEdge() {
+	public TIMRAD_2025.helptool.object.TIMRADEdge getOtherSideEdge() {
 		Area neighbour = (Area) worldHelper.getEntity(getNeighbours().second());
 		if (neighbour instanceof Road) {
 			TIMRADRoad roadNeighbour = worldHelper.getTIMRADRoad(neighbour.getID());
-			return roadNeighbour.getTimradEdgeInPoint(getMiddlePoint());
+			return roadNeighbour.getTIMRADEdgeInPoint(getMiddlePoint());
 		}
 		return null;
 	}

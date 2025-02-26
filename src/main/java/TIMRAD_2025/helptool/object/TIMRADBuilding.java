@@ -217,7 +217,7 @@ public class TIMRADBuilding {
 			if(worldHelper.getWorldInfo().getEntity(id) instanceof Building) {
 				Building build = (Building) worldHelper.getWorldInfo().getEntity(id);
 				if(build.isOnFire()) ///|| build.isTemperatureDefined() && build.getTemperature() > 35)
-					neighbourDangerBuildings.add(worldHelper.getCsuBuilding(build));
+					neighbourDangerBuildings.add(worldHelper.getTIMRADBuilding(build));
 			}
 		}
 		return neighbourDangerBuildings;
@@ -737,7 +737,7 @@ public class TIMRADBuilding {
 
 	@Override
 	public String toString() {
-		return "CSUBuilding: [" + this.selfBuilding + "]";
+		return "TIMRADBuilding: [" + this.selfBuilding + "]";
 	}
 
 	public boolean isBigBuilding() {

@@ -1,8 +1,8 @@
 package TIMRAD_2025.module.complex.pf;
 
-import TIMRAD_2025.TIMRADConstants;
+import TIMRAD_2025.helptool.TIMRADConstants;
 import TIMRAD_2025.debugger.DebugHelper;
-import TIMRAD_2025.extaction.pf.guidelineHelper;
+import TIMRAD_2025.extaction.guidelineHelper;
 import adf.core.agent.communication.MessageManager;
 import adf.core.agent.develop.DevelopData;
 import adf.core.agent.info.AgentInfo;
@@ -50,19 +50,19 @@ public class GuidelineCreator extends AbstractModule {
         switch (si.getMode()) {
             case PRECOMPUTATION_PHASE:
                 this.pathPlanning = moduleManager.getModule("RoadDetector.PathPlanning",
-                        CSUConstants.A_STAR_PATH_PLANNING);
+                        TIMRADConstants.A_STAR_PATH_PLANNING);
                 this.clustering = moduleManager.getModule("SampleRoadDetector.Clustering",
                         "adf.core.sample.module.algorithm.SampleKMeans");
                 break;
             case PRECOMPUTED:
                 this.pathPlanning = moduleManager.getModule("RoadDetector.PathPlanning",
-                        CSUConstants.A_STAR_PATH_PLANNING);
+                        TIMRADConstants.A_STAR_PATH_PLANNING);
                 this.clustering = moduleManager.getModule("SampleRoadDetector.Clustering",
                         "adf.core.sample.module.algorithm.SampleKMeans");
                 break;
             case NON_PRECOMPUTE:
                 this.pathPlanning = moduleManager.getModule("RoadDetector.PathPlanning",
-                        CSUConstants.A_STAR_PATH_PLANNING);
+                        TIMRADConstants.A_STAR_PATH_PLANNING);
                 this.clustering = moduleManager.getModule("SampleRoadDetector.Clustering",
                         "adf.core.sample.module.algorithm.SampleKMeans");
                 break;

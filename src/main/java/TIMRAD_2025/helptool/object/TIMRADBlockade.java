@@ -73,8 +73,8 @@ public class TIMRADBlockade {
 		return blockedEdges;
 	}
 
-	public void addBlockedEdges(TIMRADEdge csuEdge) {
-		if (!blockedEdges.contains(csuEdge))
-			blockedEdges.add(csuEdge);
+	public void addBlockedEdges(TIMRADEdge TIMRADEdge) {
+		if (!blockedEdges.contains(TIMRADEdge))
+			blockedEdges.add(TIMRADEdge);
 	}
 }

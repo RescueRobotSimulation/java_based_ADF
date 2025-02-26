@@ -9,7 +9,7 @@ import rescuecore2.worldmodel.EntityID;
  * Created by Mostafa Shabani
  * Date: Nov 28, 2010
  * Time: 11:49:48 AM
- * Edit: CSU
+ * Edit: TIMRAD
  */
 public class MyEdge {
     private EntityID id;

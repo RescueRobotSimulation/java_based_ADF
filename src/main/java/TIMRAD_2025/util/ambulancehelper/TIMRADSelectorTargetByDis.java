@@ -1,6 +1,5 @@
 package TIMRAD_2025.util.ambulancehelper;
 
-//import CSU_Yunlu_2021.util.DistanceSorter;
 import adf.core.agent.develop.DevelopData;
 import adf.core.agent.info.AgentInfo;
 import adf.core.agent.info.ScenarioInfo;
@@ -275,7 +274,7 @@ public class TIMRADSelectorTargetByDis {
                 target = targetsMap.get(victim.getID());
                 human = (Human) worldInfo.getEntity(victim.getID());
                 if (target == null) {
-                    //creating a new CSU_Target object
+                    //creating a new TIMRAD_Target object
                     target = new TIMRADTarget(victim.getID());
 
                     //set target position

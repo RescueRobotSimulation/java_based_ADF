@@ -19,13 +19,10 @@ public interface TIMRADConstants {
     public static final boolean DEBUG_BACK_TO_MY_CLUSTER = false;
     public static final boolean DEBUG_INIT_CND = false;
 
-    public static final String WORLD_HELPER_DEFAULT = "CSU_Yunlu_2023.world.CSUWorldHelper";
-    public static final String WORLD_HELPER_FIRE_BRIGADE = "CSU_Yunlu_2023.world.CSUFireBrigadeWorld";
-    public static final String FIRE_CLUSTERING = "CSU_Yunlu_2023.module.algorithm.fb.CSUFireClustering";
-    public static final String GRAPH_HELPER_DEFAULT = "CSU_Yunlu_2023.world.graph.GraphHelper";
-    public static final String GUIDE_LINE_CREATOR = "CSU_Yunlu_2023.module.complex.pf.GuidelineCreator";
-    public static final String SEARCH_HELPER = "CSU_Yunlu_2023.module.complex.fb.search.SearchHelper";
-    public static final String A_STAR_PATH_PLANNING = "CSU_Yunlu_2023.module.algorithm.AStarPathPlanning";
+    public static final String WORLD_HELPER_DEFAULT = "TIMRAD_2024.helptool.TIMRADWorldHelper";
+    public static final String GRAPH_HELPER_DEFAULT = "TIMRAD_2025.helptool.GraphHelper";
+    public static final String GUIDE_LINE_CREATOR = "TIMRAD_2025.module.complex.pf.GuidelineCreator";
+    public static final String A_STAR_PATH_PLANNING = "TIMRAD_2025.module.algorithm.AStarPathPlanning";
 
     public static final double MEAN_VELOCITY_DISTANCE = 31445.392;
     public static final int AGENT_SIZE = 1000;

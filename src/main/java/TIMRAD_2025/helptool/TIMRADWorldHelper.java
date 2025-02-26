@@ -209,7 +209,7 @@ public class TIMRADWorldHelper extends AbstractModule {
                 civiliansSeen.add(entity.getID());
             } else if (entity instanceof Building) {
                 Building building = (Building) entity;
-                TIMRADBuilding csuBuilding = getTIMRADBuilding(building.getID());
+                TIMRADBuilding TIMRADBuilding = getTIMRADBuilding(building.getID());
                 if (agentInfo.me() instanceof FireBrigade) {
                     if (building.isFierynessDefined() && building.isTemperatureDefined()) {
                         TIMRADBuilding.setEnergy(building.getTemperature() * TIMRADBuilding.getCapacity(), "updateInfo");
@@ -382,17 +382,17 @@ public class TIMRADWorldHelper extends AbstractModule {
     }
 
     private void initTIMRADRoads() {
-        TIMRADRoad csuRoad;
+        TIMRADRoad TIMRADRoad;
         Road road;
         for (StandardEntity entity : getRoadsWithURN(worldInfo)) {
             road = (Road) entity;
-            csuRoad = new TIMRADRoad(road, this);
+            TIMRADRoad = new TIMRADRoad(road, this);
             this.TIMRADRoadMap.put(entity.getID(), TIMRADRoad);
         }
     }
 
     private void initTIMRADHydrants() {
-        TIMRADHydrant csuHydrant;
+        TIMRADHydrant TIMRADHydrant;
         for (StandardEntity entity : getHydrantsWithURN(worldInfo)) {
             TIMRADHydrant = new TIMRADHydrant(entity.getID());
             this.TIMRADHydrantMap.put(entity.getID(), TIMRADHydrant);
@@ -874,11 +874,11 @@ public class TIMRADWorldHelper extends AbstractModule {
         return worldInfo.getEntity(id);
     }
 
-    public TIMRADBuilding getCsuBuilding(StandardEntity entity) {
+    public TIMRADBuilding getTIMRADBuilding(StandardEntity entity) {
         return this.TIMRADBuildingMap.get(entity.getID());
     }
 
-    public TIMRADBuilding getCsuBuilding(EntityID entityId) {
+    public TIMRADBuilding getTIMRADBuilding(EntityID entityId) {
         return this.TIMRADBuildingMap.get(entityId);
     }
 
@@ -890,11 +890,11 @@ public class TIMRADWorldHelper extends AbstractModule {
         return this.TIMRADRoadMap.get(entityId);
     }
 
-    public Collection<TIMRADBuilding> getCsuBuildings() {
+    public Collection<TIMRADBuilding> getTIMRADBuildings() {
         return this.TIMRADBuildingMap.values();
     }
 
-    public Map<EntityID, TIMRADBuilding> getCsuBuildingMap() {
+    public Map<EntityID, TIMRADBuilding> getTIMRADBuildingMap() {
         return TIMRADBuildingMap;
     }
 
@@ -902,7 +902,7 @@ public class TIMRADWorldHelper extends AbstractModule {
         return TIMRADRoadMap;
     }
 
-    public TIMRADHydrant getCsuHydrant(EntityID entityid) {
+    public TIMRADHydrant getTIMRADHydrant(EntityID entityid) {
         return this.TIMRADHydrantMap.get(entityid);
     }
 
@@ -1092,11 +1092,11 @@ public class TIMRADWorldHelper extends AbstractModule {
         Collection<StandardEntity> objectsInRange = worldInfo.getObjectsInRange(agentInfo.getID(), range);
         for (StandardEntity entity : objectsInRange) {
             if (entity instanceof Road) {
-                TIMRADRoad csuRoad = TIMRADRoadMap.get(entity.getID());
-                List<TIMRADBlockade> csuBlockades = csuRoad.getTIMRADBlockades();
-                for (TIMRADBlockade csuBlockade : csuBlockades) {
-                    if (Ruler.getDistance(csuBlockade.getPolygon(), getSelfLocation()) <= range) {
-                        result.add(csuBlockade.getSelfBlockade());
+                TIMRADRoad TIMRADRoad = TIMRADRoadMap.get(entity.getID());
+                List<TIMRADBlockade> TIMRADBlockades = TIMRADRoad.getTIMRADBlockades();
+                for (TIMRADBlockade TIMRADBlockade : TIMRADBlockades) {
+                    if (Ruler.getDistance(TIMRADBlockade.getPolygon(), getSelfLocation()) <= range) {
+                        result.add(TIMRADBlockade.getSelfBlockade());
                     }
                 }
             }
@@ -1109,9 +1109,9 @@ public class TIMRADWorldHelper extends AbstractModule {
         Area selfArea = (Area) getSelfPosition();
         List<EntityID> neighbours = selfArea.getNeighbours();
         for (EntityID id : neighbours) {
-            TIMRADRoad csuRoad = TIMRADRoadMap.get(id);
-            if (csuRoad != null) {
-                results.add(csuRoad);
+            TIMRADRoad TIMRADRoad = TIMRADRoadMap.get(id);
+            if (TIMRADRoad != null) {
+                results.add(TIMRADRoad);
             }
         }
         return results;

@@ -70,7 +70,7 @@ public class TIMRADExtActionClear extends ExtAction {
                         "adf.core.sample.module.algorithm.SamplePathPlanning");
                 break;
         }
-        this.world = moduleManager.getModule("WorldHelper.Default", CSUConstants.WORLD_HELPER_DEFAULT);
+        this.world = moduleManager.getModule("WorldHelper.Default", TIMRADConstants.WORLD_HELPER_DEFAULT);
         this.stuckHelper = new StuckHelper(world,worldInfo);
         this.selfLocation = worldInfo.getLocation(agentInfo.getID());
         this.lastPosition = new Point(selfLocation.first(), selfLocation.second());

@@ -1,36 +1,36 @@
-package TIMRAD_2025.helptool.object;
+package TIMRAD_2025.helptool;
 
 import rescuecore2.misc.geometry.Line2D;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-public class TIMRADEscapePoint {
-	private List<TIMRADBlockade> realteBlockades = new ArrayList<>();;
+public class TIMRADEscapePointHelper {
+	private List<TIMRADBlockadeHelper> realteBlockades = new LinkedList<>();;
 	
 	private Point underlyingPoint;
 	
 	private Line2D line;
 	
-	public TIMRADEscapePoint(Point point, Line2D line, TIMRADBlockade... blockade) {
+	public TIMRADEscapePointHelper(Point point, Line2D line, TIMRADBlockadeHelper... blockade) {
 		this.setUnderlyingPoint(point);
 		this.setLine(line);
 		
-		for (TIMRADBlockade next : blockade) {
+		for (TIMRADBlockadeHelper next : blockade) {
 			this.realteBlockades.add(next);
 		}
 	}
 
-	public List<TIMRADBlockade> getRelateBlockade() {
+	public List<TIMRADBlockadeHelper> getRelateBlockade() {
 		return this.realteBlockades;
 	}
 	
-	public void addTIMRADBlockade(TIMRADBlockade blockade) {
+	public void addTIMRADBlockade(TIMRADBlockadeHelper blockade) {
 		this.realteBlockades.add(blockade);
 	}
 	
-	public boolean removeTIMRADBLockade(TIMRADBlockade blockade) {
+	public boolean removeTIMRADBLockade(TIMRADBlockadeHelper blockade) {
 		return this.realteBlockades.remove(blockade);
 	}
 
