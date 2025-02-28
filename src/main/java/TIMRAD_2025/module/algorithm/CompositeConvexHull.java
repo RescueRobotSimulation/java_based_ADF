@@ -7,7 +7,7 @@ import math.geom2d.polygon.convhull.JarvisMarch2D;
 
 import rescuecore2.misc.geometry.Line2D;
 import rescuecore2.misc.geometry.Point2D;
-import TIMRAD_2025.module.algorithm.fb.*;
+// import TIMRAD_2025.module.algorithm.fb;
 
 
 import java.awt.*;
@@ -45,11 +45,11 @@ public class CompositeConvexHull implements IConvexHull {
         removedPoints = new HashSet<Point>();
     }
 
-    @SuppressWarnings("unused")
-    @Override
-    public Long getGuid() {
-        return guid;
-    }
+    // @SuppressWarnings("unused")
+    // @Override
+    // public Long getGuid() {
+    //     return guid;
+    // }
 
     // @Override
     // public Polygon getConvexPolygon() {
@@ -200,52 +200,52 @@ public class CompositeConvexHull implements IConvexHull {
     //     }
     // }
 
-    @Override
-    public void addPoint(int x, int y) {
-        addPoint(new Point(x, y));
-    }
+    // @Override
+    // public void addPoint(int x, int y) {
+    //     addPoint(new Point(x, y));
+    // }
 
-    @Override
-    public void addPoint(Point point) {
-        if (removedPoints.contains(point)) {
-            removedPoints.remove(point);
-        } else {
-            addedPoints.add(point);
-        }
-    }
+    // @Override
+    // public void addPoint(Point point) {
+    //     if (removedPoints.contains(point)) {
+    //         removedPoints.remove(point);
+    //     } else {
+    //         addedPoints.add(point);
+    //     }
+    // }
 
-    @Override
-    public void removePoint(int x, int y) {
-        removePoint(new Point(x, y));
-    }
+    // @Override
+    // public void removePoint(int x, int y) {
+    //     removePoint(new Point(x, y));
+    // }
 
-    @Override
-    public void removePoint(Point point) {
-        if (addedPoints.contains(point)) {
-            addedPoints.remove(point);
-        } else {
-            removedPoints.add(point);
-        }
-    }
+    // @Override
+    // public void removePoint(Point point) {
+    //     if (addedPoints.contains(point)) {
+    //         addedPoints.remove(point);
+    //     } else {
+    //         removedPoints.add(point);
+    //     }
+    // }
 
     private boolean isDataUpdated() {
         return !addedPoints.isEmpty() || !removedPoints.isEmpty();
     }
 
-    @Override
-    public void updatePoints(Collection<Point> addedPoints, Collection<Point> removedPoints) {
-        if (addedPoints != null) {
-            for (Point addedPoint : addedPoints) {
-                addPoint(addedPoint);
-            }
-        }
+    // @Override
+    // public void updatePoints(Collection<Point> addedPoints, Collection<Point> removedPoints) {
+    //     if (addedPoints != null) {
+    //         for (Point addedPoint : addedPoints) {
+    //             addPoint(addedPoint);
+    //         }
+    //     }
 
-        if (removedPoints != null) {
-            for (Point removedPoint : removedPoints) {
-                removePoint(removedPoint);
-            }
-        }
-    }
+    //     if (removedPoints != null) {
+    //         for (Point removedPoint : removedPoints) {
+    //             removePoint(removedPoint);
+    //         }
+    //     }
+    // }
 
     private static List<Point2D> convertPoints(List<Point> points) {
         List<Point2D> point2ds = new ArrayList<Point2D>();
@@ -268,10 +268,20 @@ public class CompositeConvexHull implements IConvexHull {
         return new Polygon(xPoints, yPoints, vertices.size());
     }
 
-    @Override
     public Polygon getConvexPolygon() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getConvexPolygon'");
     }
+
+    public void addPoint(int i, int j) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addPoint'");
+    }
+
+    // @Override
+    // public Polygon getConvexPolygon() {
+    //     // TODO Auto-generated method stub
+    //     throw new UnsupportedOperationException("Unimplemented method 'getConvexPolygon'");
+    // }
 
 }

@@ -155,7 +155,7 @@ public class SampleKMeans extends StaticClustering {
 			return this;
 		}
 		calClusterAndAssign();
-		visualDebug();
+		// visualDebug();
 		return this;
 	}
 
@@ -168,7 +168,7 @@ public class SampleKMeans extends StaticClustering {
 		}
 
 		calClusterAndAssign();
-		visualDebug();
+		// visualDebug();
 		return this;
 	}
 
@@ -326,7 +326,7 @@ public class SampleKMeans extends StaticClustering {
 		else
 			assignAgent();
 		this.calced = true;
-		visualDebug();
+		// visualDebug();
 	}
 	private void assignAT_FB() {
 		ArrayList<StandardEntity> agentList = new ArrayList<>(sortedTeamAgents);
@@ -463,20 +463,20 @@ public class SampleKMeans extends StaticClustering {
 
 
 
-	private void visualDebug() {
-		int index = getClusterIndex(agentInfo.getID());
-		CompositeConvexHull convexHull = new CompositeConvexHull();
-		Collection<StandardEntity> clusterEntities = getClusterEntities(index);
-		clusterEntities.remove(agentInfo.me());
-		for (StandardEntity entity : getClusterEntities(index)) {
-			Pair<Integer, Integer> location = worldInfo.getLocation(entity);
-			convexHull.addPoint(location.first(), location.second());
-		}
-		Polygon polygon = convexHull.getConvexPolygon();
-		ArrayList<Polygon> data = new ArrayList<>();
-		if (polygon != null) {
-			data.add(convexHull.getConvexPolygon());
-		}
+	// private void visualDebug() {
+	// 	int index = getClusterIndex(agentInfo.getID());
+	// 	CompositeConvexHull convexHull = new CompositeConvexHull();
+	// 	Collection<StandardEntity> clusterEntities = getClusterEntities(index);
+	// 	clusterEntities.remove(agentInfo.me());
+	// 	for (StandardEntity entity : getClusterEntities(index)) {
+	// 		Pair<Integer, Integer> location = worldInfo.getLocation(entity);
+	// 		convexHull.addPoint(location.first(), location.second());
+	// 	}
+	// 	Polygon polygon = convexHull.getConvexPolygon();
+	// 	ArrayList<Polygon> data = new ArrayList<>();
+	// 	if (polygon != null) {
+	// 		data.add(convexHull.getConvexPolygon());
+	// 	}
 //		if (DebugHelper.DEBUG_MODE && scenarioInfo.getMode() != ScenarioInfo.Mode.PRECOMPUTATION_PHASE) {
 //			try {
 //				DebugHelper.VD_CLIENT.drawAsync(agentInfo.getID().getValue(), "ClusterConvexPolygon", data);
@@ -493,7 +493,7 @@ public class SampleKMeans extends StaticClustering {
 //				e.printStackTrace();
 //			}
 //		}
-	}
+	// }
 
 	public static double dist(double Ax, double Ay, double Bx, double By) {
 		return Math.hypot(Ax - Bx, Ay - By);
