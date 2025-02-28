@@ -22,7 +22,7 @@ import java.util.*;
  *
  * @version 1.0
  */
-public class CompositeConvexHull implements IConvexHull {
+public class CompositeConvexHull implements IConvexHull, TIMRAD_2025.module.algorithm.fb.IConvexHull {
 
     private List<Point> points;
 
@@ -276,6 +276,36 @@ public class CompositeConvexHull implements IConvexHull {
     public void addPoint(int i, int j) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'addPoint'");
+    }
+
+    @Override
+    public Long getGuid() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getGuid'");
+    }
+
+    @Override
+    public void addPoint(Point point) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'addPoint'");
+    }
+
+    @Override
+    public void removePoint(int x, int y) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removePoint'");
+    }
+
+    @Override
+    public void removePoint(Point point) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removePoint'");
+    }
+
+    @Override
+    public void updatePoints(Collection<Point> addedPoints, Collection<Point> removedPoints) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'updatePoints'");
     }
 
     // @Override
