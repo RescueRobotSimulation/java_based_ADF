@@ -68,14 +68,16 @@ public class TIMRADPoliceRoadDetector extends RoadDetector {
     }
 
 
-  @Override
+ @Override
   public RoadDetector calc() {
     EntityID positionID = this.agentInfo.getPosition();
     StandardEntity currentPosition = worldInfo.getEntity(positionID);
     logger.debug("Current position: " + currentPosition);
 
-    // اضافه کردن موقعیت فعلی به مناطق باز شده
-    openedAreas.add((Area) currentPosition);
+    // اضافه کردن موقعیت فعلی به مناطق باز شده (فقط اگر مانع نداشته باشد)
+    if (!(currentPosition instanceof Road && ((Road) currentPosition).isBlockadesDefined() && !((Road) currentPosition).getBlockades().isEmpty())) {
+        openedAreas.add((Area) currentPosition);
+    }
 
     // اگر به هدف رسیدیم، آن را ریست کنیم
     if (positionID.equals(this.target)) {
@@ -88,28 +90,61 @@ public class TIMRADPoliceRoadDetector extends RoadDetector {
         List<Set<Area>> prioritizedTargets = findPrioritizedTargetAreas();
         logger.debug("Prioritized targets: " + prioritizedTargets);
 
-        // انتخاب هدف بر اساس اولویت
-        for (Set<Area> targetSet : prioritizedTargets) {
+        EntityID closestTarget = null;
+        int shortestPathLength = Integer.MAX_VALUE;
+
+        // بررسی هر گروه اولویت‌دار برای پیدا کردن نزدیک‌ترین هدف
+        for (int priority = 0; priority < prioritizedTargets.size(); priority++) {
+            Set<Area> targetSet = prioritizedTargets.get(priority);
             if (!targetSet.isEmpty()) {
                 this.pathPlanning.setFrom(positionID);
                 this.pathPlanning.setDestination(targetSet.stream().map(Area::getID).collect(Collectors.toSet()));
                 List<EntityID> path = this.pathPlanning.calc().getResult();
                 if (path != null && !path.isEmpty()) {
-                    this.target = path.get(path.size() - 1); // نزدیک‌ترین هدف از این اولویت
-                    logger.debug("Selected target: " + this.target + " from priority group");
-                    break; // اولین گروه غیرخالی انتخاب می‌شود
+                    int pathLength = path.size();
+                    if (pathLength < shortestPathLength) {
+                        shortestPathLength = pathLength;
+                        closestTarget = path.get(pathLength - 1);
+                        logger.debug("Found closer target at priority " + priority + ": " + closestTarget + " with path length " + pathLength);
+                    }
+                }
+                // اگر هدفی پیدا شد، ادامه نده (اولویت بالاتر غالب است)
+                if (closestTarget != null) {
+                    break;
                 }
             }
         }
 
+        // اگر هیچ هدفی پیدا نشد، تمام جاده‌های دارای موانع را دوباره بررسی کن
+        if (closestTarget == null) {
+            Set<Area> blockedRoads = new HashSet<>();
+            for (StandardEntity entity : this.worldInfo.getEntitiesOfType(StandardEntityURN.ROAD)) {
+                Road road = (Road) entity;
+                if (road.isBlockadesDefined() && !road.getBlockades().isEmpty()) {
+                    blockedRoads.add(road);
+                }
+            }
+            if (!blockedRoads.isEmpty()) {
+                this.pathPlanning.setFrom(positionID);
+                this.pathPlanning.setDestination(blockedRoads.stream().map(Area::getID).collect(Collectors.toSet()));
+                List<EntityID> path = this.pathPlanning.calc().getResult();
+                if (path != null && !path.isEmpty()) {
+                    closestTarget = path.get(path.size() - 1);
+                    logger.debug("Selected closest blocked road as fallback: " + closestTarget);
+                }
+            }
+        }
+
+        this.target = closestTarget;
         if (this.target == null) {
-            logger.debug("No targets found in any priority group");
+            logger.debug("No targets found in any priority group or blocked roads");
+        } else {
+            logger.debug("Selected closest target: " + this.target);
         }
     }
 
     return this;
   }
-
     // متد کمکی برای پیدا کردن مناطق هدف
   private List<Set<Area>> findPrioritizedTargetAreas() {
     List<Set<Area>> prioritizedTargets = new ArrayList<>(6); // 6 سطح اولویت
@@ -169,10 +204,13 @@ public class TIMRADPoliceRoadDetector extends RoadDetector {
         }
     }
 
-    // فیلتر کردن به خوشه مأمور و حذف مناطق باز شده
-    for (Set<Area> targetSet : prioritizedTargets) {
+    // فیلتر کردن به خوشه مأمور (بدون حذف مناطق باز برای جاده‌های دارای موانع)
+    for (int i = 0; i < prioritizedTargets.size(); i++) {
+        Set<Area> targetSet = prioritizedTargets.get(i);
         Set<Area> inClusterTargets = filterInCluster(targetSet);
-        inClusterTargets.removeAll(openedAreas);
+        if (i != 5) { // برای جاده‌های دارای موانع (اولویت 5) مناطق باز را حذف نکن
+            inClusterTargets.removeAll(openedAreas);
+        }
         targetSet.clear();
         targetSet.addAll(inClusterTargets);
     }
