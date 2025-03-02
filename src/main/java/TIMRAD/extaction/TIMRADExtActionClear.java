@@ -212,7 +212,7 @@ public class TIMRADExtActionClear extends ExtAction {
         this.target = target_id;
       }
     }
-    System.out.println(this.target);
+    System.out.println("Action Clear Target: " + this.target);
     return this;
   }
 
@@ -221,16 +221,16 @@ public class TIMRADExtActionClear extends ExtAction {
   public ExtAction calc() {
     this.result = null;
     PoliceForce policeForce = (PoliceForce) this.agentInfo.me();
-    System.out.println(policeForce);
+    System.out.println("Action Clear Police: " + policeForce);
 
     Blockade stuckBlockade = isStuck();
     if (stuckBlockade != null) {
-        System.out.println("1- Agent is stuck");
+        // System.out.println("1- Agent is stuck");
         this.result = clearBlockade(stuckBlockade);
         return this;
     }
     if (isNotMoving()) {
-        System.out.println("1- is not moving!");
+        // System.out.println("1- is not moving!");
         this.result = clearNearestBlockade();
         return this;
     }
@@ -314,13 +314,13 @@ public class TIMRADExtActionClear extends ExtAction {
         StandardEntity position = worldInfo.getPosition(police.getID());
 
         if (!(position instanceof Road || position instanceof Hydrant)) {
-            System.out.println("2- Agent is not in a road or hydrant, cannot clear blockades");
+            // System.out.println("2- Agent is not in a road or hydrant, cannot clear blockades");
             return null;
         }
 
         Road road = (Road) position;
         if (!road.isBlockadesDefined() || road.getBlockades().isEmpty()) {
-            System.out.println("2- No blockades in current road ID: " + road.getID() + ". Moving to random neighbor.");
+            // System.out.println("2- No blockades in current road ID: " + road.getID() + ". Moving to random neighbor.");
             return moveToRandomNeighbor(road);
         }
 
@@ -347,16 +347,16 @@ public class TIMRADExtActionClear extends ExtAction {
 
         if (nearestBlockade != null) {
             if (minDistanceToEdge <= 10000) {
-                System.out.println("2- Clearing nearest blockade ID: " + nearestBlockade.getID() + " at edge distance: " + minDistanceToEdge);
+                // System.out.println("2- Clearing nearest blockade ID: " + nearestBlockade.getID() + " at edge distance: " + minDistanceToEdge);
                 return new ActionClear(nearestBlockade);
             } else {
-                System.out.println("2- Nearest blockade ID: " + nearestBlockade.getID() + " is too far (edge distance: " + minDistanceToEdge + "). Moving towards it.");
+                // System.out.println("2- Nearest blockade ID: " + nearestBlockade.getID() + " is too far (edge distance: " + minDistanceToEdge + "). Moving towards it.");
                 int targetX = (int) nearestBlockade.getX();
                 int targetY = (int) nearestBlockade.getY();
                 return new ActionMove(Lists.newArrayList(agentInfo.getPosition()), targetX, targetY);
             }
         } else {
-            System.out.println("2- No valid blockades found to clear. Moving to random neighbor.");
+            // System.out.println("2- No valid blockades found to clear. Moving to random neighbor.");
             return moveToRandomNeighbor(road);
         }
     }
@@ -366,10 +366,10 @@ public class TIMRADExtActionClear extends ExtAction {
         if (!neighbours.isEmpty()) {
             Random random = new Random();
             EntityID randomNeighbour = neighbours.get(random.nextInt(neighbours.size()));
-            System.out.println("2- Moving randomly to neighbor ID: " + randomNeighbour);
+            // System.out.println("2- Moving randomly to neighbor ID: " + randomNeighbour);
             return new ActionMove(Lists.newArrayList(agentInfo.getPosition(), randomNeighbour));
         } else {
-            System.out.println("2- No neighbors available to move to!");
+            // System.out.println("2- No neighbors available to move to!");
             return null;
         }
     }
