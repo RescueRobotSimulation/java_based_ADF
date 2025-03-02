@@ -10,6 +10,7 @@ import adf.core.component.module.algorithm.Clustering;
 import adf.core.component.module.algorithm.PathPlanning;
 import adf.core.component.module.complex.RoadDetector;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,58 +106,68 @@ public class TIMRADPoliceRoadDetector extends RoadDetector {
     }
 
     // متد کمکی برای پیدا کردن مناطق هدف
-    private Set<Area> findTargetAreas() {
-        Set<Area> targetAreas = new HashSet<>();
+  private Set<Area> findTargetAreas() {
+    Set<Area> targetAreas = new HashSet<>();
 
-        // 1. پناهگاه‌ها
-        for (StandardEntity entity : this.worldInfo.getEntitiesOfType(StandardEntityURN.REFUGE)) {
-            targetAreas.add((Area) entity);
-            logger.debug("Added refuge: " + entity.getID());
-        }
-
-        // 2. انسان‌های گرفتار و عامل‌های گرفتار
-        for (StandardEntity entity : this.worldInfo.getEntitiesOfType(
-                StandardEntityURN.CIVILIAN,
-                StandardEntityURN.AMBULANCE_TEAM,
-                StandardEntityURN.FIRE_BRIGADE,
-                StandardEntityURN.POLICE_FORCE)) {
-            if (isValidHuman(entity)) {
-                Human human = (Human) entity;
-                Area humanPosition = (Area) worldInfo.getEntity(human.getPosition());
-                targetAreas.add(humanPosition);
-                logger.debug("Added trapped human/agent position: " + humanPosition.getID());
-            }
-        }
-
-        // 3. ورودی‌های مسدود ساختمان‌ها
-        for (StandardEntity entity : this.worldInfo.getEntitiesOfType(StandardEntityURN.BUILDING, StandardEntityURN.REFUGE, StandardEntityURN.GAS_STATION)) {
-            Building building = (Building) entity;
-            for (EntityID entranceID : building.getNeighbours()) {
-                StandardEntity entrance = worldInfo.getEntity(entranceID);
-                if (entrance instanceof Road) {
-                    Road road = (Road) entrance;
-                    if (road.isBlockadesDefined() && !road.getBlockades().isEmpty()) {
-                        targetAreas.add(road);
-                        logger.debug("Added blocked entrance road: " + road.getID());
-                    }
-                }
-            }
-        }
-
-        // 4. جاده‌های دارای موانع (Blockades)
-        for (StandardEntity entity : this.worldInfo.getEntitiesOfType(StandardEntityURN.ROAD)) {
-            Road road = (Road) entity;
-            if (road.isBlockadesDefined() && !road.getBlockades().isEmpty()) {
-                targetAreas.add(road);
-                logger.debug("Added road with blockades: " + road.getID());
-            }
-        }
-
-        // حذف مناطق باز شده
-        targetAreas.removeAll(openedAreas);
-        return targetAreas;
+    // 1. پناهگاه‌ها
+    for (StandardEntity entity : this.worldInfo.getEntitiesOfType(StandardEntityURN.REFUGE)) {
+        targetAreas.add((Area) entity);
+        logger.debug("Added refuge: " + entity.getID());
     }
 
+    // 2. انسان‌های گرفتار و عامل‌های گرفتار
+    for (StandardEntity entity : this.worldInfo.getEntitiesOfType(
+            StandardEntityURN.CIVILIAN,
+            StandardEntityURN.AMBULANCE_TEAM,
+            StandardEntityURN.FIRE_BRIGADE,
+            StandardEntityURN.POLICE_FORCE)) {
+        if (isValidHuman(entity)) {
+            Human human = (Human) entity;
+            Area humanPosition = (Area) worldInfo.getEntity(human.getPosition());
+            targetAreas.add(humanPosition);
+            logger.debug("Added trapped human/agent position: " + humanPosition.getID());
+        }
+    }
+
+    // 3. جاده‌های دارای موانع (Blockades)
+    for (StandardEntity entity : this.worldInfo.getEntitiesOfType(StandardEntityURN.ROAD)) {
+        Road road = (Road) entity;
+        if (road.isBlockadesDefined() && !road.getBlockades().isEmpty()) {
+            targetAreas.add(road);
+            logger.debug("Added road with blockades: " + road.getID());
+        }
+    }
+
+    // 4. ساختمان‌ها
+    for (StandardEntity entity : this.worldInfo.getEntitiesOfType(StandardEntityURN.BUILDING)) {
+        Building building = (Building) entity;
+        targetAreas.add(building);
+        logger.debug("Added building: " + building.getID());
+    }
+
+    // فیلتر کردن اهداف به خوشه مأمور
+    Set<Area> inClusterTargets = filterInCluster(targetAreas);
+    logger.debug("Targets in cluster: " + inClusterTargets);
+
+    // حذف مناطق باز شده
+    inClusterTargets.removeAll(openedAreas);
+    return inClusterTargets;
+  }   
+
+
+  private Set<Area> filterInCluster(Set<Area> targetAreas) {
+    int clusterIndex = this.clustering.getClusterIndex(this.agentInfo.getID());
+    Set<Area> clusterTargets = new HashSet<>();
+    Collection<StandardEntity> inClusterEntities = this.clustering.getClusterEntities(clusterIndex);
+
+    for (Area target : targetAreas) {
+        if (inClusterEntities.contains(target)) {
+            clusterTargets.add(target);
+        }
+    }
+
+    return clusterTargets;
+}
 // متد کمکی برای اعتبارسنجی انسان‌ها
 private boolean isValidHuman(StandardEntity entity) {
     if (!(entity instanceof Human)) return false;
