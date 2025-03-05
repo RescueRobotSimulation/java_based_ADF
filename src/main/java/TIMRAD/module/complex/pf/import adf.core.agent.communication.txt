@@ -1,0 +1,253 @@
+import adf.core.agent.communication.MessageManager;
+import adf.core.agent.communication.standard.bundle.MessageUtil;
+import adf.core.agent.communication.standard.bundle.centralized.CommandPolice;
+import adf.core.agent.communication.standard.bundle.information.*;
+import adf.core.agent.develop.DevelopData;
+import adf.core.agent.info.AgentInfo;
+import adf.core.agent.info.ScenarioInfo;
+import adf.core.agent.info.WorldInfo;
+import adf.core.agent.module.ModuleManager;
+import adf.core.agent.precompute.PrecomputeData;
+import adf.core.component.communication.CommunicationMessage;
+import adf.core.component.module.algorithm.Clustering;
+import adf.core.component.module.algorithm.PathPlanning;
+import adf.core.component.module.complex.RoadDetector;
+import adf.core.launcher.ConsoleOutput;
+import com.mrl.debugger.remote.VDClient;
+import mrl_2023.algorithm.clustering.ConvexHull;
+import mrl_2023.complex.firebrigade.BuildingProperty;
+import mrl_2023.util.Util;
+import mrl_2023.viewer.MrlPersonalData;
+import mrl_2023.world.MrlWorldHelper;
+import mrl_2023.world.entity.Entrance;
+import rescuecore2.misc.Pair;
+import rescuecore2.standard.entities.*;
+import rescuecore2.worldmodel.EntityID;
+
+import java.awt.*;
+import java.io.Serializable;
+import java.util.List;
+import java.util.*;
+
+import static rescuecore2.standard.entities.StandardEntityURN.*;
+
+public class TIMRADPoliceRoadDetector extends RoadDetector{
+    private Set<EntityID> targetAreas, doneTasks, priorityRoads, coincidentalRoads;
+    private Map<StandardEntityURN, Set<EntityID>> targetAreasMap;
+    private PathPlanning pathPlanning;
+    private Clustering clustering;
+    private EntityID result;
+    private Polygon clusterConvexPolygon;
+    private Map<EntityID, BuildingProperty> sentBuildingMap;
+    private MrlWorldHelper worldHelper;
+
+
+    public TIMRADPoliceRoadDetector(AgentInfo ai, WorldInfo wi, ScenarioInfo si, ModuleManager moduleManager, DevelopData developData) {
+        super(ai, wi, si, moduleManager, developData);
+        this.pathPlanning = moduleManager.getModule("SampleRoadDetector.PathPlanning", "adf.impl.module.algorithm.AStarPathPlanning");
+        this.clustering = moduleManager.getModule("MrlSimpleFireSearch.Clustering.Police", "adf.impl.module.algorithm.KMeansClustering");
+        this.worldHelper = WorldHelper.load(agentInfo, worldInfo, scenarioInfo, moduleManager, developData); //WorldHelper --> TIMRADWorldHelper
+
+        this.result = null;
+        this.sentBuildingMap = new HashMap<>();
+        this.coincidentalRoads = new HashSet<>();
+        this.priorityRoads = new HashSet<>();
+        this.targetAreas = new HashSet<>();
+        this.doneTasks = new HashSet<>();
+        this.targetAreasMap = new HashMap<>();
+    }
+
+    @Override
+    public RoadDetector calc() {
+        EntityID positionID = this.agentInfo.getPosition();
+        updateBlockedEntities();
+
+        coincidentalRoads.removeAll(doneTasks);
+        if (result != null && coincidentalRoads.contains(result)) {
+            return this;
+        }
+        if (!coincidentalRoads.isEmpty()) {
+            return getRoadDetector(positionID, coincidentalRoads);
+        }
+
+        filterTargetAreas();
+        if (priorityRoads.contains(positionID) || targetAreas.contains(positionID)) {
+            result = positionID;
+            return this;
+        }
+
+        return selectBestTarget(positionID);
+    }
+
+    public class RoadDetector {
+        private Clustering clustering;
+        private WorldInfo worldInfo;
+        private AgentInfo agentInfo;
+        private PathPlanning pathPlanning;
+        private GuidelineCreator guidelineCreator;
+        private MessageManager messageManager;
+        private boolean needClearCommonRoad = true;
+        private Set<Civilian> sendCivilian = new HashSet<>();
+        private Set<EntityID> processedEntities = new HashSet<>();
+        private Map<EntityID, Boolean> roadBlockadeCache = new HashMap<>();
+
+        public RoadDetector(Clustering clustering, WorldInfo worldInfo, AgentInfo agentInfo, PathPlanning pathPlanning, GuidelineCreator guidelineCreator) {
+            this.clustering = clustering;
+            this.worldInfo = worldInfo;
+            this.agentInfo = agentInfo;
+            this.pathPlanning = pathPlanning;
+            this.guidelineCreator = guidelineCreator;
+        }
+
+        public RoadDetector precompute(PrecomputeData precomputeData) {
+            this.pathPlanning.precompute(precomputeData);
+            this.clustering.precompute(precomputeData);
+            this.guidelineCreator.precompute(precomputeData);
+            return this;
+        }
+
+        public RoadDetector resume(PrecomputeData precomputeData) {
+            this.pathPlanning.resume(precomputeData);
+            this.clustering.resume(precomputeData);
+            this.guidelineCreator.resume(precomputeData);
+            return this;
+        }
+
+        public RoadDetector preparate() {
+            this.pathPlanning.preparate();
+            this.clustering.preparate();
+            this.guidelineCreator.preparate();
+            return this;
+        }
+
+        public RoadDetector updateInfo(MessageManager messageManager) {
+            this.messageManager = messageManager;
+            Set<EntityID> changed = this.agentInfo.getChanged().getChangedEntities();
+            for (EntityID entityID : changed) {
+                StandardEntity entity = this.worldInfo.getEntity(entityID);
+                if (entity instanceof Civilian) {
+                    Civilian civilian = (Civilian) entity;
+                    if (civilian.isBuriednessDefined() && civilian.getBuriedness() > 0 && civilian.isHPDefined() && civilian.getHP() > 0) {
+                        this.sendCivilian.add(civilian);
+                    }
+                }
+                if (entity instanceof FireBrigade) {
+                    for (Civilian civilian : this.sendCivilian) {
+                        if (civilian.isBuriednessDefined() && civilian.getBuriedness() > 0 && civilian.isHPDefined() && civilian.getHP() > 0) {
+                            messageManager.addMessage(new MessageCivilian(false, StandardMessagePriority.HIGH, civilian));
+                        }
+                    }
+                    sendCivilian.clear();
+                }
+            }
+            return this;
+        }
+
+        public void calc() {
+            Point2D clusterCenter = calculateClusterCenter();
+            double clusterRange = getClusterRange(clusterCenter);
+            PriorityQueue<Road> priorityQueue = new PriorityQueue<>(Comparator.comparingInt(this::calculateRoadPriority).reversed());
+
+            for (Road road : getRelevantRoads(clusterCenter, clusterRange)) {
+                priorityQueue.add(road);
+            }
+
+            while (!priorityQueue.isEmpty()) {
+                Road road = priorityQueue.poll();
+                if (shouldClear(road)) {
+                    clearRoad(road);
+                    return;
+                }
+            }
+        }
+
+        private boolean isBlocked(Road road) {
+            return roadBlockadeCache.computeIfAbsent(road.getID(), id -> road.isBlockadesDefined() && !road.getBlockades().isEmpty());
+        }
+
+        private int calculateRoadPriority(Road road) {
+            int priority = road.getNeighbours().size();
+
+            for (StandardEntity entity : worldInfo.getEntitiesOfType(StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.AMBULANCE_TEAM)) {
+                if (worldInfo.getPosition(entity.getID()).equals(road)) {
+                    priority += 5;
+                }
+            }
+
+            if (isBlocked(road)) {
+                double blockadeRatio = (double) road.getBlockades().size() / road.getNeighbours().size();
+                priority -= (int) (blockadeRatio * 5); // کاهش بر اساس شدت انسداد
+
+                // افزایش اولویت در صورتی که عامل در جاده مسدود گیر افتاده باشد
+                if (agentInfo.getPosition().equals(road.getID())) {
+                    priority += 10; // افزایش شدید اولویت برای آزادسازی خود عامل
+                }
+            }
+
+            // افزایش اولویت برای جاده‌هایی که به پناهگاه متصل هستند
+            for (EntityID neighborID : road.getNeighbours()) {
+                StandardEntity neighbor = worldInfo.getEntity(neighborID);
+                if (neighbor instanceof Refuge) {
+                    priority += 5; // افزایش اولویت برای مسیرهای منتهی به پناهگاه
+                }
+            }
+
+            return priority;
+        }
+    }
+
+    private void updateBlockedEntities() {
+        for (StandardEntity entity : worldInfo.getEntitiesOfType(StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.AMBULANCE_TEAM, StandardEntityURN.REFUGE)) {
+            if (worldInfo.getChanged().getChangedEntities().contains(entity.getID())) {
+                Building building = entity instanceof Building ? (Building) entity : null;
+                if (building != null) addBuildingNeighboursToTargets(building);
+            }
+        }
+    }
+
+    private void addBuildingNeighboursToTargets(Building building) {
+        for (EntityID neighbourId : building.getNeighbours()) {
+            StandardEntity neighbour = worldInfo.getEntity(neighbourId);
+            if (neighbour instanceof Road && !doneTasks.contains(neighbour.getID())) {
+                coincidentalRoads.add(neighbour.getID());
+            }
+        }
+    }
+
+    private void filterTargetAreas() {
+        List<EntityID> removeList = new ArrayList<>();
+        for (EntityID id : priorityRoads) {
+            if (!targetAreas.contains(id)) removeList.add(id);
+        }
+        priorityRoads.removeAll(removeList);
+        priorityRoads.removeAll(doneTasks);
+        targetAreasMap.values().forEach(set -> set.removeAll(removeList));
+    }
+
+    private RoadDetector selectBestTarget(EntityID positionID) {
+        for (StandardEntityURN type : List.of(StandardEntityURN.FIRE_BRIGADE, StandardEntityURN.REFUGE, StandardEntityURN.AMBULANCE_TEAM)) {
+            Set<EntityID> entityIDSet = targetAreasMap.get(type);
+            if (entityIDSet != null && !entityIDSet.isEmpty()) return getRoadDetector(positionID, entityIDSet);
+        }
+        if (!priorityRoads.isEmpty()) return getRoadDetector(positionID, priorityRoads);
+
+        pathPlanning.setFrom(positionID);
+        pathPlanning.setDestination(targetAreas);
+        List<EntityID> path = pathPlanning.calc().getResult();
+        if (path != null && !path.isEmpty()) result = path.get(path.size() - 1);
+        return this;
+    }
+
+    private RoadDetector getRoadDetector(EntityID positionID, Set<EntityID> entityIDSet) {
+        pathPlanning.setFrom(positionID);
+        pathPlanning.setDestination(entityIDSet);
+        List<EntityID> path = pathPlanning.calc().getResult();
+        if (path != null && !path.isEmpty()) result = path.get(path.size() - 1);
+        return this;
+    }
+
+    @Override
+    public EntityID getTarget() {
+        return result;
+    }
+}
