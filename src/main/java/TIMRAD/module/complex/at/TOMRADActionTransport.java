@@ -18,7 +18,7 @@ public class TIMRADActionTransport extends ExtAction {
         super(agentInfo, worldInfo, scenarioInfo, moduleManager, developData);
         
         this.thresholdRest = developData.getInteger("ActionTransport.rest", 100);
-        this.pathPlanning = moduleManager.getModule("OptimizedActionTransport.PathPlanning", "adf.impl.module.algorithm.AStarPathPlanning");
+        this.pathPlanning = moduleManager.getModule("TIMRADActionTransport.PathPlanning", "adf.impl.module.algorithm.AStarPathPlanning");
         this.actionExtMove = moduleManager.getExtAction("OptimizedTactics.ExtActionMove", "adf.impl.extaction.OptimizedExtActionMove");
         this.messageManager = new MessageManager();
         
